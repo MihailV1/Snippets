@@ -1,10 +1,12 @@
-from django.urls import path
+from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 from MainApp import views
 
 urlpatterns = [
-    path('', views.index_page),
-    path('snippets/add', views.add_snippet_page),
-    path('snippets/list', views.snippets_page),
+    # path('', include('MainApp.urls')),
+    path('', views.index_page, name='home'),
+    path('snippets/add', views.add_snippet_page, name='snippet-add'),
+    path('snippets/list', views.snippets_page, name='snippets-list'),
 ]
+# snippets/add
