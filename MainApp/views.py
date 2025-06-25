@@ -25,7 +25,7 @@ def snippet_detail(request, id):
     snippet = get_object_or_404(Snippet, id=id)
     context = {'pagename': 'Просмотр сниппета',
                        'snippet': snippet,}
-    return render(request, 'pages/snippet.html', context)
+    return render(request, 'pages/snippet_detail.html', context)
 
     # try:
     #     snippets = Snippet.objects.get(id=id)
