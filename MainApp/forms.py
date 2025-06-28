@@ -23,6 +23,11 @@ class SnippetForm(forms.Form):
         max_length=5000,
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 10, 'placeholder': 'Введите ваш код здесь'})
     )
+    description = forms.CharField(
+        label="Пояснение",
+        max_length=1000,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Введите пояснение'})
+    )
 
     def clean_name(self):
         name = self.cleaned_data['name']

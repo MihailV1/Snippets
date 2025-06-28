@@ -1,8 +1,12 @@
 from django.http import Http404
 from django.shortcuts import render, redirect,get_object_or_404
+from django.db.models import F
 from MainApp.models import Snippet
 from MainApp.forms import SnippetForm
+from MainApp.models import LANG_ICON
 
+def get_icon(lang):
+    return LANG_ICON.get(lang)
 
 
 def index_page(request):
@@ -24,9 +28,9 @@ def add_snippet_page(request):
             # form.save()
             name = form.cleaned_data['name']
             lang = form.cleaned_data['lang']
+            description = form.cleaned_data['description']
             code = form.cleaned_data['code']
-
-            Snippet.objects.create(name=name, lang=lang, code=code)
+            Snippet.objects.create(name=name, lang=lang, code=code, description=description)
             return redirect('snippets-list')
         else:
             context = {'form': form, 'pagename': 'Создание Сниппета'}
@@ -37,13 +41,19 @@ def add_snippet_page(request):
 def snippets_page(request):
     snippets = Snippet.objects.all()
     snippet_count= len(snippets)
+    for snippet in snippets:
+        snippet.icon = get_icon(snippet.lang)
     context = {'pagename': 'Просмотр сниппетов',
                'snippets': snippets,
-               'snippet_count': snippet_count}
+               # 'snippet_count': snippet_count,
+               'icon': get_icon(snippets)}
     return render(request, 'pages/view_snippets.html', context)
 
 def snippet_detail(request, id):
     snippet = get_object_or_404(Snippet, id=id)
+    snippet.views_count = F('views_count') + 1
+    snippet.save(update_fields=['views_count'])
+    snippet.refresh_from_db()
     context = {'pagename': 'Просмотр сниппета',
                        'snippet': snippet,}
     return render(request, 'pages/snippet.html', context)
@@ -56,26 +66,28 @@ def snippet_detail(request, id):
     # except Snippet.DoesNotExist:
     #     raise Http404
 
-def snippet_create(request):
-    if request.method == 'GET':
-        form = SnippetForm()
-        # print(f"FORM METHOD -> {request.method}")
-        return render(request, 'pages/add_snippet.html', {'form': form})
-
-    if request.method == 'POST':
-        form = SnippetForm(request.POST)
-        # print(f"FORM DATA: {request.POST}")
-        if form.is_valid():
-            # form.save()
-            name = form.cleaned_data['name']
-            lang = form.cleaned_data['lang']
-            code = form.cleaned_data['code']
-
-            Snippet.objects.create(name=name, lang=lang, code=code)
-            return redirect('snippets-list')
-        else:
-            return render(request, 'pages/add_snippet.html',
-                          {'form': form, 'pagename': "Создание Сниппет"})
+# def snippet_create(request):
+#     if request.method == 'GET':
+#         form = SnippetForm()
+#         print(f"FORM METHOD -> {request.method}")
+#         return render(request, 'pages/add_snippet.html', {'form': form})
+#
+#     if request.method == 'POST':
+#         form = SnippetForm(request.POST)
+#         print(f"FORM DATA: {request.POST}")
+#         print(f"request.method == 'POST' FORM: {form}")
+#         if form.is_valid():
+#             # form.save()
+#             name = form.cleaned_data['name']
+#             lang = form.cleaned_data['lang']
+#             description = form.cleaned_data['description']
+#             code = form.cleaned_data['code']
+#             Snippet.objects.create(name=name, lang=lang, code=code, description=description)
+#
+#             return redirect('snippets-list')
+#         else:
+#             return render(request, 'pages/add_snippet.html',
+#                           {'form': form, 'pagename': "Создание Сниппет"})
 
 def snippet_delete(request, id):
     snippet = get_object_or_404(Snippet, id=id)
@@ -88,9 +100,10 @@ def snippet_edit(request, id):
         form =SnippetForm(initial={
             'name': snippet.name,
             'lang': snippet.lang,
-            'code': snippet.code
+            'code': snippet.code,
+            'description': snippet.description,
         })
-        print(f"StartFORM ->\n{form}\nendFORM")
+        # print(f"StartFORM ->\n{form}\nendFORM")
     # context = {'form': form, 'edit': True,'id': id}
         context = {
             'form': form,
@@ -105,6 +118,7 @@ def snippet_edit(request, id):
             snippet.name = form.cleaned_data['name']
             snippet.lang = form.cleaned_data['lang']
             snippet.code = form.cleaned_data['code']
+            snippet.description = form.cleaned_data['description']
             snippet.save()
             return redirect('snippets-list')
         else:

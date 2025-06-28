@@ -17,8 +17,11 @@
                <div class="col col-3">
                    Язык програмирования: <input type="text" value="{{ snippet.lang }}" class="form-control">
                </div>
-               <div class="col col-4">
-                   Дата создания:<input type="text" value="{{ snippet.creation_date }}" class="form-control">
+               <div class="col col-2">
+                   Дата создания:<input type="text" value="{{ snippet.creation_date|date:'d.m.Y H:i' }}" class="form-control">
+               </div>
+               <div class="col col-2">
+                   Дата редактирования:<input type="text" value="{{ snippet.update_at|date:'d.m.Y H:i' }}" class="form-control">
                </div>
            </div>
            <hr>
@@ -26,11 +29,25 @@
                <div class="col">
                    <div class="p-2 h-100" style="border:1px solid #ced4da; border-radius:5px;">
                        <p>
-                           {{ snippet.code}}
+                           Description:<input type="text" value="{{ snippet.description }}" class="form-control" style="height: calc(10vh + 10px)">
+                       </p>
+                   </div>
+               </div>
+           </div>
+            <hr>
+           <div class="row">
+               <div class="col">
+                   <div class="p-2 h-100" style="border:1px solid #ced4da; border-radius:5px;">
+                       <p>
+                           Code:<textarea  name="code" class="form-control" style="height: calc(30vh + 10px)">{{ snippet.code }}
+                       </textarea>
                        </p>
                    </div>
                </div>
            </div>
         </fieldset>
+        <div class="d-flex justify-content-end">
+                    <i class="text-muted">Всего смотрели: {{ snippet.views_count }}</i></div>
     </div>
+
 {% endblock %}
