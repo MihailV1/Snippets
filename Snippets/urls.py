@@ -8,8 +8,11 @@ urlpatterns = [
     path('', views.index_page, name='home'),
     path('snippets/add', views.add_snippet_page, name='snippet-add'),
     path('snippets/list', views.snippets_page, name='snippets-list'),
+    path('snippets/my', views.snippets_my, name='snippets-my'),
     path('snippet/<int:id>', views.snippet_detail, name='snippet-id'),
     path('snippet/<int:id>/delete', views.snippet_delete, name='snippet-delete'),
     path('snippet/<int:id>/edit', views.snippet_edit, name='snippet-edit'),
+    path('login/', views.login_page, name='login'),
+    path('logout/', views.user_logout, name='logout'),
 ]
 # snippets/add

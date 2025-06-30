@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 LANG_CHOICES = [('', '--- Выберите язык ---'),
@@ -35,3 +36,6 @@ class Snippet(models.Model):
 
     def __str__(self):
         return self.name
+
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE,
+                      blank=True, null=True)
