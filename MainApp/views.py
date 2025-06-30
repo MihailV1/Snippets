@@ -102,6 +102,7 @@ def snippet_detail(request, id):
 #             return render(request, 'pages/add_snippet.html',
 #                           {'form': form, 'pagename': "Создание Сниппет"})
 
+@login_required
 def snippet_delete(request, id):
     snippet = get_object_or_404(Snippet, id=id)
     snippet.delete()
