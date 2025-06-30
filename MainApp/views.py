@@ -105,6 +105,9 @@ def snippet_detail(request, id):
 @login_required
 def snippet_delete(request, id):
     snippet = get_object_or_404(Snippet, id=id)
+    if snippet.user != request.user:
+        context = {'pagename': 'Э! Какой умный!'}
+        return render(request, 'pages/index.html', context)
     snippet.delete()
     return redirect('snippets-list')
 
@@ -129,6 +132,9 @@ def snippet_edit(request, id):
         return render(request, 'pages/add_snippet.html', context)
     if request.method == 'POST':
         form = SnippetForm(request.POST)
+        if snippet.user != request.user:
+            context = {'pagename': 'Э! Какой умный!'}
+            return render(request, 'pages/index.html', context)
         if form.is_valid():
             snippet.name = form.cleaned_data['name']
             snippet.lang = form.cleaned_data['lang']
