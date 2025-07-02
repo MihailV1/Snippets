@@ -58,6 +58,11 @@
                                     <div class="dropdown-divider"></div>
                                 </div>
                             </li>
+                            {% if not request.user.is_authenticated %}
+                            <li>
+                                <a href="{% url 'registration' %}" class="btn btn-success">Регистрация</a>
+                            </li>
+                                {% endif %}
                             {% if errors %}
                                 <ul style="color: red">
                                 {% for error in errors %}

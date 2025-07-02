@@ -1,11 +1,14 @@
 from django.http import Http404
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import auth # Импортируем модуль auth
-from django.db.models import F
+from django.db.models import F,Q
 from MainApp.models import Snippet
-from MainApp.forms import SnippetForm
+from MainApp.forms import SnippetForm, UserRegistrationForm
 from MainApp.models import LANG_ICON
 from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.forms import UserCreationForm
+
+
 
 def get_icon(lang):
     return LANG_ICON.get(lang)
@@ -32,7 +35,9 @@ def add_snippet_page(request):
             lang = form.cleaned_data['lang']
             description = form.cleaned_data['description']
             code = form.cleaned_data['code']
-            Snippet.objects.create(name=name, lang=lang, code=code, description=description, user_id=request.user.id)
+            public = form.cleaned_data['public']
+            print(name, lang, description, code, public)
+            Snippet.objects.create(name=name, lang=lang, code=code, description=description, user_id=request.user.id , public=public)
             return redirect('snippets-list')
         else:
             context = {'form': form, 'edit': False, 'pagename': 'Создание Сниппета'}
@@ -41,14 +46,21 @@ def add_snippet_page(request):
 
 
 def snippets_page(request):
-    snippets = Snippet.objects.all()
+    if not request.user.is_authenticated:
+        snippets = Snippet.objects.filter(public=True)
+    else:
+        snippets = Snippet.objects.filter(Q(public=True) | Q(public=False, user_id=request.user.id))
+    print(type(snippets))
+    print(snippets.query)
     snippet_count= len(snippets)
     for snippet in snippets:
         snippet.icon = get_icon(snippet.lang)
     context = {'pagename': 'Просмотр сниппетов',
                'snippets': snippets,
                'snippet_count': snippet_count,
-               'icon': get_icon(snippets)}
+               'icon': get_icon(snippets)
+
+               }
     return render(request, 'pages/view_snippets.html', context)
 
 def snippets_my(request):
@@ -181,3 +193,20 @@ def login_page(request):
 def user_logout(request):
     auth.logout(request)
     return redirect('home')
+
+def user_registration(request):
+    if request.method == "GET":
+        user_form = UserRegistrationForm()
+        context = {
+            "user_form": user_form, 'pagename': 'Регистрация'
+        }
+        return render(request, "pages/registration.html", context)
+
+    if request.method == "POST":
+        user_form = UserRegistrationForm(request.POST)
+        if user_form.is_valid():
+            user_form.save()
+            return redirect("home")
+        else:
+            context = {'user_form': user_form, 'pagename': 'Регистрация'}
+            return render(request, "pages/registration.html", context)

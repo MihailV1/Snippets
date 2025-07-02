@@ -18,6 +18,9 @@ LANG_ICON = {
     "JavaScript":"fa-brands fa-js",
     "html":"fa-brands fa-html5",
 }
+PUBLIC_CHOICES = [(0, 'Частный'),
+            (1, 'Публичный'),
+]
 # class Lang(models.Model):
 #     pass
 
@@ -37,5 +40,6 @@ class Snippet(models.Model):
     def __str__(self):
         return self.name
 
+    public = models.BooleanField(default=True, choices=PUBLIC_CHOICES)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE,
                       blank=True, null=True)

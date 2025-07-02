@@ -14,5 +14,6 @@ urlpatterns = [
     path('snippet/<int:id>/edit', views.snippet_edit, name='snippet-edit'),
     path('login/', views.login_page, name='login'),
     path('logout/', views.user_logout, name='logout'),
+    path('registration/', views.user_registration, name='registration'),
 ]
 # snippets/add
