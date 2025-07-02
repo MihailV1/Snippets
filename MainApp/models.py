@@ -40,6 +40,6 @@ class Snippet(models.Model):
     def __str__(self):
         return self.name
 
-    public = models.BooleanField(default=True, choices=PUBLIC_CHOICES)
+    public = models.BooleanField(default=True)#, choices=PUBLIC_CHOICES)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE,
                       blank=True, null=True)

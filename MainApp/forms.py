@@ -28,11 +28,10 @@ class SnippetForm(forms.Form):
         max_length=1000,
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Введите пояснение'})
     )
-    public = forms.ChoiceField(
-        label="Видимость Сниппита", #
-        choices=PUBLIC_CHOICES,
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-control'})
+    public = forms.BooleanField(
+        label="Сделать сниппет публичным",
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
 
     def clean_name(self):

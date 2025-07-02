@@ -50,16 +50,16 @@ def snippets_page(request):
         snippets = Snippet.objects.filter(public=True)
     else:
         snippets = Snippet.objects.filter(Q(public=True) | Q(public=False, user_id=request.user.id))
-    print(type(snippets))
-    print(snippets.query)
+    # print(type(snippets))
+    # print(snippets.query)
     snippet_count= len(snippets)
     for snippet in snippets:
         snippet.icon = get_icon(snippet.lang)
     context = {'pagename': 'Просмотр сниппетов',
                'snippets': snippets,
                'snippet_count': snippet_count,
-               'icon': get_icon(snippets)
-
+               'icon': get_icon(snippets),
+                'public': snippet.public,
                }
     return render(request, 'pages/view_snippets.html', context)
 
@@ -71,7 +71,9 @@ def snippets_my(request):
     context = {'pagename': 'Мои сниппеты',
                'snippets': snippets,
                'snippet_count': snippet_count,
-               'icon': get_icon(snippets)}
+               'icon': get_icon(snippets),
+                'public': snippet.public,}
+    print(f"snippet.user-->{snippet.user}   snippet.public-->{snippet.public}")
     return render(request, 'pages/view_snippets.html', context)
 
 def snippet_detail(request, id):
