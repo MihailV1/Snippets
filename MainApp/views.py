@@ -97,12 +97,14 @@ def snippet_detail(request, id):
     # comments = Comment.objects.filter(snippet_id=id)
     # comments = snippet.comment_set.all().order_by('-creation_date') # Получаем все комментарии для данного сниппета
     comments = snippet.comments.all()
-
+    comments_count = len(comments)
+    # print(f"------------\n\n\n\ncomments_count = {comments_count}\n\n\n\n-------------")
     comment_form = CommentForm() # Передаем пустую форму для добавления комментариев
     context = {'pagename': 'Просмотр сниппета',
                        'snippet': snippet,
                         'comments': comments,
-                        'comment_form': comment_form
+                        'comment_form': comment_form,
+                        'comments_count': comments_count,
                         }
     return render(request, 'pages/snippet.html', context)
 
@@ -240,7 +242,7 @@ def comment_add(request):
       comment_form = CommentForm(request.POST)
       snippet_id = request.POST.get('snippet_id') # Получаем ID сниппета из формы
       snippet = get_object_or_404(Snippet, id=snippet_id)
-      print(f"\n\n\n\n------------------------------>snippet_id = {snippet_id}\n\n\n\n")
+      # print(f"\n\n\n\n------------------------------>snippet_id = {snippet_id}\n\n\n\n")
       if comment_form.is_valid():
          comment = comment_form.save(commit=False)
          comment.author = request.user # Текущий авторизованный пользователь

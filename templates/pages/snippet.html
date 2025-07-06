@@ -57,11 +57,13 @@
                         <h5>Оставить комментарий</h5>
                     </div>
                     <div class="card-body">
-                        <form>
+                        <form action="{% url 'comment_add' %}" method="POST">
+                            {% csrf_token %}
                             <div class="mb-3">
-                                <textarea class="form-control" id="commentText" rows="5"
+                                <textarea name="text" class="form-control" id="commentText" rows="5"
                                           placeholder="Введите ваш комментарий здесь..." required></textarea>
                             </div>
+                            <input type="hidden" name="snippet_id" value="{{ snippet.id }}">
                             <button type="submit" class="btn btn-primary">Отправить комментарий</button>
                         </form>
                     </div>
@@ -73,7 +75,7 @@
 <div class="row">
     <div class="col-8">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0">Всего комментариев: <span class="badge bg-secondary">4</span></h5>
+            <h5 class="mb-0">Всего комментариев: <span class="badge bg-secondary">{{ comments_count }}</span></h5>
             <button class="btn btn-outline-secondary btn-sm">
                 <i class="fa-solid fa-arrow-up-short-wide"></i>
                 Сортировка

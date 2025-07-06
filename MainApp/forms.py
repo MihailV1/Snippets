@@ -99,5 +99,14 @@ class UserRegistrationForm(forms.ModelForm):
 
 class CommentForm(forms.ModelForm):
    class Meta:
-      model = Comment
-      fields = ['text'] # Указываем только поле text, остальные будут заполнены автоматически
+        model = Comment
+        fields = ['text'] # Указываем только поле text, остальные будут заполнены автоматически
+        widgets = {
+           'text': forms.Textarea(attrs={
+               'class': 'form-control',
+               'id': 'commentText',
+               'rows': 5,
+               'placeholder': 'Введите ваш комментарий здесь...',
+               'required': True,  # это HTML-атрибут, не Python-валидация
+           })
+   }
