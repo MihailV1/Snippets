@@ -76,10 +76,25 @@
     <div class="col-8">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="mb-0">Всего комментариев: <span class="badge bg-secondary">{{ comments_count }}</span></h5>
-            <button class="btn btn-outline-secondary btn-sm">
-                <i class="fa-solid fa-arrow-up-short-wide"></i>
-                Сортировка
-            </button>
+            {% if sort == "creation_date" %}
+                                <a class="btn btn-outline-secondary btn-sm" href="?sort=-creation_date" role="button">
+                                    <i class="fa-solid fa-arrow-up-wide-short"></i> Сортировка</a>
+                            {% elif sort == "-creation_date" %}
+                                <a class="btn btn-outline-secondary btn-sm" href="?sort=creation_date" role="button">
+                                    <i class="fa-solid fa-arrow-up-short-wide"></i> Сортировка</a>
+                            {% else %}
+                                <a class="btn btn-outline-secondary btn-sm" href="?sort=-creation_date" role="button">
+                                    <i class="fa-solid fa-arrow-up-wide-short"></i> Сортировка</a>
+                            {% endif %}
+{#            <a class="btn btn-outline-secondary btn-sm" href="?sort=creation_date" role="button">#}
+{#                <i class="fa-solid fa-arrow-up-short-wide"></i> Сортировка</a>#}
+
+{#            <a class="btn btn-outline-secondary btn-sm" href="?sort=-creation_date" role="button">#}
+{#                <i class="fa-solid fa-arrow-up-wide-short"></i> Сортировка</a>#}
+{#            <button class="btn btn-outline-secondary btn-sm">#}
+{#                <i class="fa-solid fa-arrow-up-short-wide"></i>#}
+{#                Сортировка#}
+{#            </button>#}
         </div>
     </div>
 </div>
@@ -87,14 +102,15 @@
 <div class="row mt-4">
         <div class="col-8">
             <ul class="list-group mb-3">
+                {% for comment in comments %}
                 <li class="list-group-item d-flex align-items-start">
                     <div class="w-100">
                         <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Alex</h5>
-                            <small class="text-muted">3 июля 2025 г. в 20:57</small>
+                            <h5 class="mb-1">{{ comment.author }}</h5>
+                            <small class="text-muted">{{ comment.creation_date|date:"j E Y    H:i" }}</small>
                         </div>
                         <p class="mb-1">
-                            Это текст комментария пользователя Alex
+                            {{ comment.text }}
                         </p>
                         <small>
                             <a href="#" class="text-decoration-none me-2">Ответить</a>
@@ -107,30 +123,7 @@
                         </small>
                     </div>
                 </li>
-                <li class="list-group-item d-flex align-items-start">
-                    <div class="w-100">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Ivan</h5>
-                            <small class="text-muted">2 июля 2025 г. в 15:30</small>
-                        </div>
-                        <p class="mb-1">
-                            Еще один комментарий. Очень длинный комментарий, для проверки отображения длинного
-                            текста.
-                            Даже если этот текст занимает несколько строк. Ведь у нас будет ограничение на 5000
-                            символов.
-                            Что позволит пользователям писать целые сочинения.
-                        </p>
-                        <small>
-                            <a href="#" class="text-decoration-none me-2">Ответить</a>
-                            <a href="#" class="text-decoration-none me-2">
-                                <i class="fa-regular fa-thumbs-up"></i>
-                            </a>
-                            <a href="#" class="text-decoration-none">
-                                <i class="fa-solid fa-thumbs-down"></i>
-                            </a>
-                        </small>
-                    </div>
-                </li>
+                {% endfor %}
             </ul>
         </div>
     </div>

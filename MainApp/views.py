@@ -55,7 +55,7 @@ def snippets_page(request):
     else:
         snippets = Snippet.objects.filter(Q(public=True) | Q(public=False, user_id=request.user.id))
 
-    sort = request.GET.get('sort')
+    # sort = request.GET.get('sort')
 
     if sort is not None:
         print(f"\n\n\n\nsort: {sort}\n\n\n\n")
@@ -96,8 +96,14 @@ def snippet_detail(request, id):
     snippet.refresh_from_db()
     # comments = Comment.objects.filter(snippet_id=id)
     # comments = snippet.comment_set.all().order_by('-creation_date') # Получаем все комментарии для данного сниппета
+
     comments = snippet.comments.all()
     comments_count = len(comments)
+
+    sort = request.GET.get('sort')
+    if sort is not None:
+        print(f"\n\n\n\nsort: {sort}\n\n\n\n")
+        comments = comments.order_by(sort)
     # print(f"------------\n\n\n\ncomments_count = {comments_count}\n\n\n\n-------------")
     comment_form = CommentForm() # Передаем пустую форму для добавления комментариев
     context = {'pagename': 'Просмотр сниппета',
@@ -105,6 +111,7 @@ def snippet_detail(request, id):
                         'comments': comments,
                         'comment_form': comment_form,
                         'comments_count': comments_count,
+                        'sort': sort,
                         }
     return render(request, 'pages/snippet.html', context)
 
