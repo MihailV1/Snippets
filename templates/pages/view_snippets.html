@@ -22,16 +22,61 @@
                     <thead class="table-dark">
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">Название</th>
-                        <th scope="col">Дата создания</th>
-                        <th scope="col">Автор</th>
+                        <th scope="col">
+                            {% if sort == "name" %}
+                                <a href="?sort=-name">Название</a>
+                                <i class="fa-solid fa-arrow-up-a-z"></i>
+                            {% elif sort == "-name" %}
+                                <a href="?sort=name">Название</a>
+                                <i class="fa-solid fa-arrow-up-z-a"></i>
+                            {% else %}
+                                <a href="?sort=name">Название</a>
+{#                                <i class="fa-solid fa-arrow-up-a-z"></i>#}
+                            {% endif %}
+                        </th>
+                        <th scope="col">
+                            {% if sort == "lang" %}
+                                <a href="?sort=-lang">Язык</a>
+                                <i class="fa-solid fa-arrow-up-a-z"></i>
+                            {% elif sort == "-lang" %}
+                                <a href="?sort=lang">Язык</a>
+                                <i class="fa-solid fa-arrow-up-z-a"></i>
+                            {% else %}
+                                <a href="?sort=lang">Язык</a>
+{#                                <i class="fa-solid fa-arrow-up-a-z"></i>#}
+                            {% endif %}
+                        </th>
+                        <th scope="col">
+                        {% if sort == "creation_date" %}
+                                <a href="?sort=-creation_date">Дата создания</a>
+                                <i class="fa-solid fa-sort-up"></i>
+                            {% elif sort == "-creation_date" %}
+                                <a href="?sort=creation_date">Дата создания</a>
+                                <i class="fa-solid fa-sort-down"></i>
+                            {% else %}
+                                <a href="?sort=creation_date">Дата создания</a>
+{#                                <i class="fa-solid fa-arrow-up-a-z"></i>#}
+                            {% endif %}
+                        </th>
+                        <th scope="col">
+                            {% if sort == "user" %}
+                                <a href="?sort=-user">Автор</a>
+                                <i class="fa-solid fa-arrow-up-a-z"></i>
+                            {% elif sort == "-user" %}
+                                <a href="?sort=user">Автор</a>
+                                <i class="fa-solid fa-arrow-up-z-a"></i>
+                            {% else %}
+                                <a href="?sort=user">Автор</a>
+{#                                <i class="fa-solid fa-arrow-up-a-z"></i>#}
+                            {% endif %}
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
                      {% for snippet in snippets %}
                          <tr>
                             <td class="col-1">{{ snippet.id }}</td>
-                            <td class="col-7">
+                            <td class="col-4">
                                <i class="{{ snippet.icon }}"></i>
                                 <a href="{% url 'snippet-id' snippet.id %}">{{ snippet.name }}</a>
                                 {% if  request.user == snippet.user %}
@@ -39,11 +84,14 @@
                                 <a href="{% url 'snippet-delete' snippet.id %}"><i style="color: #564242" class="fa-solid fa-trash"></i></a>
                                 {% endif %}
                             </td>
+                            <td class="col-2">{{ snippet.lang }}</td>
                             <td class="col-3">{{ snippet.creation_date|date:"d.m.Y H:i" }}</td>
-                            <td class="col-1">
+                            <td class="col-2">
                                 {% if snippet.public == False %}
                                     <i style="color: #524d4d" class="fa-solid fa-lock"></i>
-                                {% endif %}{{ snippet.user }}
+                                {% endif %}{{ snippet.user | default_if_none:"Аноним"}}
+{#                                            {{ snippet.user|default_if_none:"Аноним" }}#}
+
                             </td>
                         </tr>
                      {% endfor %}

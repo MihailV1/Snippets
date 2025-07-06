@@ -25,6 +25,9 @@ PUBLIC_CHOICES = [(0, 'Частный'),
 #     pass
 
 class Snippet(models.Model):
+    class Meta:
+        ordering = ('name',)
+
     name = models.CharField(max_length=100)
     lang = models.CharField(max_length=10, choices=LANG_CHOICES)
     code = models.TextField(max_length=5000)
@@ -43,3 +46,9 @@ class Snippet(models.Model):
     public = models.BooleanField(default=True)#, choices=PUBLIC_CHOICES)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE,
                       blank=True, null=True)
+
+class Comment(models.Model):
+   text = models.TextField()
+   creation_date = models.DateTimeField(auto_now_add=True)
+   author = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True)
+   snippet = models.ForeignKey(to=Snippet, on_delete=models.CASCADE, related_name='comments')

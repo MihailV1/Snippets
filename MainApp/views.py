@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import auth # Импортируем модуль auth
 from django.db.models import F,Q
 from MainApp.models import Snippet
-from MainApp.forms import SnippetForm, UserRegistrationForm
+from MainApp.forms import SnippetForm, UserRegistrationForm, CommentForm
 from MainApp.models import LANG_ICON
 from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.forms import UserCreationForm
@@ -44,12 +44,23 @@ def add_snippet_page(request):
             return render(request, 'pages/add_snippet.html',
                           context)
 
-
+# snippets/list?sort=name
+# snippets/list?sort=lang
+# snippets/list?sort=create_date
 def snippets_page(request):
+    sort = request.GET.get('sort')
+    # print(sort)
     if not request.user.is_authenticated:
         snippets = Snippet.objects.filter(public=True)
     else:
         snippets = Snippet.objects.filter(Q(public=True) | Q(public=False, user_id=request.user.id))
+
+    sort = request.GET.get('sort')
+
+    if sort is not None:
+        print(f"\n\n\n\nsort: {sort}\n\n\n\n")
+        snippets = snippets.order_by(sort)
+
     # print(type(snippets))
     # print(snippets.query)
     snippet_count= len(snippets)
@@ -60,6 +71,7 @@ def snippets_page(request):
                'snippet_count': snippet_count,
                'icon': get_icon(snippets),
                 'public': snippet.public,
+               'sort': sort,
                }
     return render(request, 'pages/view_snippets.html', context)
 
@@ -77,12 +89,21 @@ def snippets_my(request):
     return render(request, 'pages/view_snippets.html', context)
 
 def snippet_detail(request, id):
-    snippet = get_object_or_404(Snippet, id=id)
+    # snippet = get_object_or_404(Snippet, id=id)
+    snippet = Snippet.objects.prefetch_related('comments').get(id=id) #.order_by('lang','-creation_date')
     snippet.views_count = F('views_count') + 1
     snippet.save(update_fields=['views_count'])
     snippet.refresh_from_db()
+    # comments = Comment.objects.filter(snippet_id=id)
+    # comments = snippet.comment_set.all().order_by('-creation_date') # Получаем все комментарии для данного сниппета
+    comments = snippet.comments.all()
+
+    comment_form = CommentForm() # Передаем пустую форму для добавления комментариев
     context = {'pagename': 'Просмотр сниппета',
-                       'snippet': snippet,}
+                       'snippet': snippet,
+                        'comments': comments,
+                        'comment_form': comment_form
+                        }
     return render(request, 'pages/snippet.html', context)
 
     # try:
@@ -212,3 +233,20 @@ def user_registration(request):
         else:
             context = {'user_form': user_form, 'pagename': 'Регистрация'}
             return render(request, "pages/registration.html", context)
+
+
+def comment_add(request):
+   if request.method == "POST":
+      comment_form = CommentForm(request.POST)
+      snippet_id = request.POST.get('snippet_id') # Получаем ID сниппета из формы
+      snippet = get_object_or_404(Snippet, id=snippet_id)
+      print(f"\n\n\n\n------------------------------>snippet_id = {snippet_id}\n\n\n\n")
+      if comment_form.is_valid():
+         comment = comment_form.save(commit=False)
+         comment.author = request.user # Текущий авторизованный пользователь
+         comment.snippet = snippet
+         comment.save()
+
+      return redirect('snippet-id', id=snippet_id) # Предполагаем, что у вас есть URL для деталей сниппета с параметром pk
+
+   raise Http404

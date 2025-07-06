@@ -1,7 +1,7 @@
 from django import forms
 from MainApp.models import LANG_CHOICES, PUBLIC_CHOICES
 from django.contrib.auth.models import User
-from MainApp.models import Snippet
+from MainApp.models import Snippet, Comment
 
 
 class SnippetForm(forms.Form):
@@ -96,3 +96,8 @@ class UserRegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class CommentForm(forms.ModelForm):
+   class Meta:
+      model = Comment
+      fields = ['text'] # Указываем только поле text, остальные будут заполнены автоматически
