@@ -8,10 +8,50 @@
             </div>
         </div>
 
+    <div class="row">
+            <div class="col">
+                <form action="" method="get">
+                    <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
+
+                        <div class="d-flex align-items-center gap-2 flex-grow-1">
+                            <label class="form-label mb-0 text-nowrap">
+                                <i class="fas fa-code me-1"></i> Язык:
+                            </label>
+                            <select name="lang" class="form-select">
+{#                                <option value="">Все языки</option>#}
+                                {% for LANG_CHOICE in LANG_CHOICES %}
+                                    <option {% if lang == LANG_CHOICE.0 %} selected {% endif %} value="{{ LANG_CHOICE.0 }}">
+                                        {{ LANG_CHOICE.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2 flex-grow-1">
+                            <label for="authorFilter" class="form-label mb-0 text-nowrap">
+                                <i class="fas fa-user me-1"></i> Автор:
+                            </label>
+                            <select name="user_id" class="form-select">
+                                <option value="" selected>Все авторы</option>
+                                {% for user in users %}
+                                    <option {% if user_id == user.id %} selected {% endif %} value="{{ user.id }}">
+                                        {{ user.username }}</option>
+{#                                    <option value="{{ user.id }}">{{ user.username }}</option>#}
+                                {% endfor %}
+
+                            </select>
+                        </div>
+
+                        <div>
+                            <button type="submit" class="btn btn-primary">Применить фильтры</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col">
                 <p>На данной страницы отображаться все созданные сниппеты.</p>
-{#                <p>Пока тут просто пример, но скоро заменим реальными сниппетами из БД!</p>#}
                 <hr>
             </div>
         </div>
@@ -73,7 +113,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                     {% for snippet in snippets %}
+                     {% for snippet in page_obj %}
                          <tr>
                             <td class="col-1">{{ snippet.id }}</td>
                             <td class="col-4">
@@ -94,6 +134,19 @@
 
                             </td>
                         </tr>
+                           {% empty %}
+                        <tr>
+                          <td colspan="5" class="text-center text-muted">
+                            {% if request.user.is_authenticated %}
+                              Привіт, {{ request.user.username }}! У тебе ще немає жодного сніпета. 😯<br>
+                              Не барися — <a href="{% url 'snippet-add' %}" class="btn btn-success">додай свій перший сніпет</a>!
+                            {% else %}
+                              Сниппеты не найдены. Авторизуйтесь, чтобы добавить свои.
+                            {% endif %}
+                            <br>
+                            <a href="{% url 'snippets-list' %}" class="btn btn-secondary mt-2">Сбросить все фильтры</a>
+                          </td>
+                        </tr>
                      {% endfor %}
                     </tbody>
                 </table>
@@ -101,5 +154,43 @@
                     <i class="text-muted">Всего сниппетов: {{ snippet_count }}</i></div>
             </div>
         </div>
+    <div class="row">
+        <div class="col">
+                        {# Блок пагинации #}
+            {% if page_obj.has_other_pages %} {# Проверяем, есть ли вообще другие страницы #}
+            <nav aria-label="Пагинация статей">
+                <ul class="pagination justify-content-center"> {# Центрируем пагинацию #}
+
+                    {# Ссылка на предыдущую страницу #}
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                        <a class="page-link"
+                           {% if page_obj.has_previous %}href="?page={{ page_obj.previous_page_number }}"{% endif %}
+                           tabindex="-1" aria-disabled="true">Предыдущая</a>
+                    </li>
+
+                    {# Номера страниц #}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {# Ссылка на следующую страницу #}
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        <a class="page-link"
+                           {% if page_obj.has_next %}href="?page={{ page_obj.next_page_number }}"{% endif %}>Следующая</a>
+                    </li>
+
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
     </div>
 {% endblock %}

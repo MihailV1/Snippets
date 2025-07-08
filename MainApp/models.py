@@ -39,13 +39,11 @@ class Snippet(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     views_count = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.name
-
     public = models.BooleanField(default=True)#, choices=PUBLIC_CHOICES)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE,
                       blank=True, null=True)
+    def __str__(self):
+        return self.name
 
 class Comment(models.Model):
    text = models.TextField()

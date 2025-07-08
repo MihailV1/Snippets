@@ -1,14 +1,15 @@
-from django.http import Http404
+from django.core.exceptions import PermissionDenied
+from django.http import Http404 , HttpResponse#, Http403
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import auth # Импортируем модуль auth
 from django.db.models import F,Q
-from MainApp.models import Snippet
+from MainApp.models import Snippet, Comment, LANG_CHOICES
 from MainApp.forms import SnippetForm, UserRegistrationForm, CommentForm
 from MainApp.models import LANG_ICON
 from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.forms import UserCreationForm
-
-
+from django.core.paginator import Paginator
+from django.contrib.auth.models import User
 
 def get_icon(lang):
     return LANG_ICON.get(lang)
@@ -47,46 +48,77 @@ def add_snippet_page(request):
 # snippets/list?sort=name
 # snippets/list?sort=lang
 # snippets/list?sort=create_date
-def snippets_page(request):
-    sort = request.GET.get('sort')
-    # print(sort)
-    if not request.user.is_authenticated:
-        snippets = Snippet.objects.filter(public=True)
+# snippets/list?page=2
+def snippets_page(request, snippets_my):
+    if snippets_my:  # url: snippets/my
+        if not request.user.is_authenticated:
+            return HttpResponse('Unauthorized', status=401)
+        snippets = Snippet.objects.filter(user=request.user)
+        pagename = "Просмотр моих сниппетов"
     else:
-        snippets = Snippet.objects.filter(Q(public=True) | Q(public=False, user_id=request.user.id))
+        if not request.user.is_authenticated:  # not auth: all public snippets
+            snippets = Snippet.objects.filter(public=True)
+        else:  # auth:     all public snippets + OR self private snippets
+            snippets = Snippet.objects.filter(Q(public=True) | Q(public=False, user=request.user))
+        pagename = "Просмотр сниппетов"
 
-    # sort = request.GET.get('sort')
+    form = SnippetForm()
 
+    # if not request.user.is_authenticated:
+    #     snippets = Snippet.objects.filter(public=True)
+    # else:
+    #     snippets = Snippet.objects.filter(Q(public=True) | Q(public=False, user_id=request.user.id))
+    sort = request.GET.get('sort')
     if sort is not None:
-        print(f"\n\n\n\nsort: {sort}\n\n\n\n")
+        # print(f"\n\n\n\nsort: {sort}\n\n\n\n")
         snippets = snippets.order_by(sort)
+        # filter
+    lang = request.GET.get("lang")
+    if lang:
+        snippets = snippets.filter(lang=lang)
+    user_id = request.GET.get("user_id")
+    if user_id:
+        snippets = snippets.filter(user__id=user_id)
 
-    # print(type(snippets))
-    # print(snippets.query)
     snippet_count= len(snippets)
+    # for snippet in snippets:
     for snippet in snippets:
         snippet.icon = get_icon(snippet.lang)
-    context = {'pagename': 'Просмотр сниппетов',
-               'snippets': snippets,
+
+    # paginator
+    paginator = Paginator(snippets, 5)  # Показывать по 10 сниппетов на странице
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)  # Получаем объект Page для запрошенной страницы
+
+    # TODO : работает или пагинация или сортировка
+
+    context = {'pagename': pagename,
+               # 'snippets': snippets,
+               # 'snippets': page_obj.object_list, # Это то же самое, что page_obj в цикле for в шаблоне
+               'page_obj': page_obj,
                'snippet_count': snippet_count,
                'icon': get_icon(snippets),
-                'public': snippet.public,
+                # 'public': snippet.public,
                'sort': sort,
+               'LANG_CHOICES': LANG_CHOICES,
+               'users': User.objects.all(),
+               'lang': lang,
                }
     return render(request, 'pages/view_snippets.html', context)
 
-def snippets_my(request):
-    snippets = Snippet.objects.filter(user_id=request.user.id)
-    snippet_count= len(snippets)
-    for snippet in snippets:
-        snippet.icon = get_icon(snippet.lang)
-    context = {'pagename': 'Мои сниппеты',
-               'snippets': snippets,
-               'snippet_count': snippet_count,
-               'icon': get_icon(snippets),
-                'public': snippet.public,}
-    print(f"snippet.user-->{snippet.user}   snippet.public-->{snippet.public}")
-    return render(request, 'pages/view_snippets.html', context)
+# @login_required
+# def snippets_my(request):
+#     snippets = Snippet.objects.filter(user_id=request.user.id)
+#     snippet_count= len(snippets)
+#     for snippet in snippets:
+#         snippet.icon = get_icon(snippet.lang)
+#     context = {'pagename': 'Мои сниппеты',
+#                'snippets': snippets,
+#                'snippet_count': snippet_count,
+#                'icon': get_icon(snippets),
+#                 'public': snippet.public,}
+#     print(f"snippet.user-->{snippet.user}   snippet.public-->{snippet.public}")
+#     return render(request, 'pages/view_snippets.html', context)
 
 def snippet_detail(request, id):
     # snippet = get_object_or_404(Snippet, id=id)
@@ -102,7 +134,7 @@ def snippet_detail(request, id):
 
     sort = request.GET.get('sort')
     if sort is not None:
-        print(f"\n\n\n\nsort: {sort}\n\n\n\n")
+        # print(f"\n\n\n\nsort: {sort}\n\n\n\n")
         comments = comments.order_by(sort)
     # print(f"------------\n\n\n\ncomments_count = {comments_count}\n\n\n\n-------------")
     comment_form = CommentForm() # Передаем пустую форму для добавления комментариев
@@ -181,6 +213,7 @@ def snippet_edit(request, id):
             return render(request, 'pages/index.html', context)
         if form.is_valid():
             snippet.name = form.cleaned_data['name']
+            snippet.public = form.cleaned_data['public']
             snippet.lang = form.cleaned_data['lang']
             snippet.code = form.cleaned_data['code']
             snippet.description = form.cleaned_data['description']
