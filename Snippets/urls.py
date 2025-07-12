@@ -16,6 +16,7 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('registration/', views.user_registration, name='registration'),
     path('comment/add', views.comment_add, name="comment_add"),
+    path('stats/', views.stats_snippets, name="stats_snippets"),
 ]
 # snippets/list
 # snippets/list?sort=name

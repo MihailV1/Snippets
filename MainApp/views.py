@@ -2,7 +2,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404 , HttpResponse#, Http403
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import auth # Импортируем модуль auth
-from django.db.models import F,Q
+from django.db.models import F, Q, Count, Avg
 from MainApp.models import Snippet, Comment, LANG_CHOICES
 from MainApp.forms import SnippetForm, UserRegistrationForm, CommentForm
 from MainApp.models import LANG_ICON
@@ -86,12 +86,12 @@ def snippets_page(request, snippets_my):
         snippet.icon = get_icon(snippet.lang)
 
     # paginator
-    paginator = Paginator(snippets, 5)  # Показывать по 10 сниппетов на странице
+    paginator = Paginator(snippets, 10)  # Показывать по 10 сниппетов на странице
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)  # Получаем объект Page для запрошенной страницы
 
-    # TODO : работает или пагинация или сортировка
-
+    # Только пользователи, у которых есть хотя бы один сниппет
+    active_users = User.objects.annotate(snippet_count=Count('snippet', filter=Q(snippet__public=True))).filter(snippet_count__gt=0)
     context = {'pagename': pagename,
                # 'snippets': snippets,
                # 'snippets': page_obj.object_list, # Это то же самое, что page_obj в цикле for в шаблоне
@@ -101,7 +101,8 @@ def snippets_page(request, snippets_my):
                 # 'public': snippet.public,
                'sort': sort,
                'LANG_CHOICES': LANG_CHOICES,
-               'users': User.objects.all(),
+               # 'users': User.objects.all(),
+               'users': active_users,
                'lang': lang,
                }
     return render(request, 'pages/view_snippets.html', context)
@@ -292,3 +293,22 @@ def comment_add(request):
       return redirect('snippet-id', id=snippet_id) # Предполагаем, что у вас есть URL для деталей сниппета с параметром pk
 
    raise Http404
+
+def stats_snippets(request):
+    # Всего сниппетов: # Публичных сниппетов
+    stats = Snippet.objects.aggregate(all_snippets=Count('id')
+                                      , all_p_snippets = Count('id', filter=Q(public=True))
+                                      , avg_p_snippets = Avg('views_count', filter=Q(public=True))
+                                      )
+    top5_views_snippets = Snippet.objects.filter(public=True).order_by('-views_count')[:5]
+    top3_users  = User.objects.annotate(top3_users_snippets_count = Count('snippet', filter=Q(snippet__public=True)))\
+                                .filter(top3_users_snippets_count__gt=0).order_by('-top3_users_snippets_count')[:3]
+    context = {'pagename': 'Статистика по сниппетам',
+                        # 'all_snippets': all_snippets,
+                       'all_snippets': stats['all_snippets'],
+                       'all_p_snippets': stats['all_p_snippets'],
+                       'avg_p_snippets': stats['avg_p_snippets'],
+                        'top5_views_snippets': top5_views_snippets,
+                        'top3_users': top3_users,
+               }
+    return render(request, 'pages/stats.html', context)

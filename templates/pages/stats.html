@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+    <!-- Begin page content -->
+    <div class="container">
+        <div class="row">
+            <div class="col text-center">
+               <h1>{{ pagename }}</h1>  {#  Статистика по сниппетам#}
+                <hr>
+            </div>
+        </div>
+    <hr>
+
+    <div class="row">
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-header">Общая статистика</div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Всего сниппетов:
+                            <span class="badge bg-primary rounded-pill">{{ all_snippets }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Публичных сниппетов:
+                            <span class="badge bg-success rounded-pill">{{ all_p_snippets }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Среднее количество просмотров:
+                            <span class="badge bg-info rounded-pill">{{ avg_p_snippets |floatformat:0 }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-header">Топ-5 самых просматриваемых сниппетов</div>
+                    <ul class="list-group list-group-flush">
+                        {% for view in top5_views_snippets %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ view.name}}
+                            <span class="badge bg-secondary rounded-pill">{{ view.views_count }} просмотров</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-12 col-lg-4">
+                <div class="card">
+                    <div class="card-header">Топ-3 пользователя по количеству сниппетов</div>
+                    <ul class="list-group list-group-flush">
+                        {% for top3_user in top3_users %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ top3_user.username }}
+                            <span class="badge bg-dark rounded-pill">{{ top3_user.top3_users_snippets_count }} сниппетов</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="/" class="btn btn-primary">Вернуться на главную</a>
+        </div>
+
+    </div>
+{% endblock %}

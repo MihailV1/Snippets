@@ -1,7 +1,7 @@
 from django import forms
 from MainApp.models import LANG_CHOICES, PUBLIC_CHOICES
 from django.contrib.auth.models import User
-from MainApp.models import Snippet, Comment
+from MainApp.models import Snippet, Comment, Tag
 
 
 class SnippetForm(forms.Form):

@@ -2,20 +2,19 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-LANG_CHOICES = [('', '--- Выберите язык ---'),
-            ("Python", "Python"),
-            ("cpp", "C++"),
-            ("java", "Java"),
-            ("JavaScript", "JavaScript"),
-            ('html', 'HTML'),
-                ('C', 'C'),
+LANG_CHOICES = [
+    ("python", "Python"),
+    ("cpp", "C++"),
+    ("java", "Java"),
+    ("javascript", "JavaScript")
 ]
+
 LANG_ICON = {
-    "Python":"fa-brands fa-python",
+    "python":"fa-brands fa-python",
     "cpp":"fa-solid fa-c",
     "C":"fa-solid fa-c",
     "java":"fa-brands fa-java",
-    "JavaScript":"fa-brands fa-js",
+    "javascript":"fa-brands fa-js",
     "html":"fa-brands fa-html5",
 }
 PUBLIC_CHOICES = [(0, 'Частный'),
@@ -37,16 +36,27 @@ class Snippet(models.Model):
         null=True        # разрешает NULL в базе данных
     )
     creation_date = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
+    update_at = models.DateTimeField(auto_now=True, null=True)
     views_count = models.IntegerField(default=0)
     public = models.BooleanField(default=True)#, choices=PUBLIC_CHOICES)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE,
                       blank=True, null=True)
-    def __str__(self):
-        return self.name
+    tags = models.ManyToManyField(to='Tag', blank=True, related_name='snippets')
+
+    def __repr__(self):
+        return f"S: {self.name}|{self.lang} views:{self.views_count} public:{self.public} user:{self.user}"
 
 class Comment(models.Model):
    text = models.TextField()
    creation_date = models.DateTimeField(auto_now_add=True)
    author = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True)
    snippet = models.ForeignKey(to=Snippet, on_delete=models.CASCADE, related_name='comments')
+
+   def __repr__(self):
+       return f"C: {self.text[:10]} author:{self.author} sn: {self.snippet.name}"
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    def __str__(self):
+        return self.name
