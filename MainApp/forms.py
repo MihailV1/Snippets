@@ -33,6 +33,12 @@ class SnippetForm(forms.Form):
         required=False,
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        widget=forms.SelectMultiple(attrs={'class': 'form-select', 'size': 8}),  #'class': 'form-control'
+        label="Теги (можно выбрать несколько)",
+        required=False,
+    )
 
     def clean_name(self):
         name = self.cleaned_data['name']

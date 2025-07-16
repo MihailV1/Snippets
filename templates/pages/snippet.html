@@ -35,15 +35,21 @@
                </div>
                    {# test block  TAG  Start #}
                 <div class="col-md-3">
-                    <h5>Теги:</h5>
-                    <span class="badge bg-primary me-2 mb-1">Python</span>
-                    <span class="badge bg-success me-2 mb-1">List Comprehension</span>
-                    <span class="badge bg-warning text-dark me-2 mb-1">Tutorial</span>
-                    <span class="badge bg-danger me-2 mb-1">Algorithms</span>
-                    <span class="badge bg-dark me-2 mb-1">Efficiency</span>
-                    <span class="badge bg-primary me-2 mb-1">Pythonic</span>
-                    <span class="badge bg-secondary me-2 mb-1">Beginner</span>
-                    <span class="badge bg-success me-2 mb-1">Advanced</span>
+                <h5>Теги:</h5>
+                {% if tags %}
+                  {% for tag in tags %}
+                    <span class="badge bg-primary me-2 mb-1">{{ tag }}</span>
+                  {% endfor %}
+                {% else %}
+                  <p class="text-muted">Поки щє тут немає тегів 😕</p>
+                {% endif %}
+{#                    <span class="badge bg-success me-2 mb-1">List Comprehension</span>#}
+{#                    <span class="badge bg-warning text-dark me-2 mb-1">Tutorial</span>#}
+{#                    <span class="badge bg-danger me-2 mb-1">Algorithms</span>#}
+{#                    <span class="badge bg-dark me-2 mb-1">Efficiency</span>#}
+{#                    <span class="badge bg-primary me-2 mb-1">Pythonic</span>#}
+{#                    <span class="badge bg-secondary me-2 mb-1">Beginner</span>#}
+{#                    <span class="badge bg-success me-2 mb-1">Advanced</span>#}
                 </div>
                     {# test block  TAG  Finish #}
            </div>

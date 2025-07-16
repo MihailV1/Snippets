@@ -27,62 +27,77 @@
                     </ul>
                   </div>
                   {% endif %}
-{#                {{ form }}#}
-{#                <form action="" method="post">#}
-                  <div class="mb-3">
-                    <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}:</label>
-                    {{ form.name }}
-                    {% if form.name.errors %}
-                    <div class="alert alert-danger mt-1" role="alert">
-                      {% for error in form.name.errors %}
-                        {{ error }}
-                      {% endfor %}
-                    </div>
-                    {% endif %}
-                  </div>
-                <div class="mb-3">
-                        <label for="{{ form.public.id_for_label }}" class="form-label">{{ form.public.label }}:</label>
-                        {{ form.public }}
-                 </div>
-                  <div class="mb-3">
-                    <label for="{{ form.lang.id_for_label }}" class="form-label">{{ form.lang.label }}:</label>
-                    {{ form.lang }}
-                    {% if form.lang.errors %}
-                    <div class="alert alert-danger mt-1" role="alert">
-                      {% for error in form.lang.errors %}
-                        {{ error }}
-                      {% endfor %}
-                    </div>
-                    {% endif %}
-                  </div>
+{#                  <div class="mb-3">#}
+{#                    <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}:</label>#}
+{#                    {{ form.name }}#}
+{#                    {% if form.name.errors %}#}
+{#                    <div class="alert alert-danger mt-1" role="alert">#}
+{#                      {% for error in form.name.errors %}#}
+{#                        {{ error }}#}
+{#                      {% endfor %}#}
+{#                    </div>#}
+{#                    {% endif %}#}
+{#                  </div>#}
+                <div class="row">
+                      <!-- Левая колонка: чекбокс + язык -->
+                      <div class="col-md-9">
+                          <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}:</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                            <div class="alert alert-danger mt-1" role="alert">
+                              {% for error in form.name.errors %}
+                                {{ error }}
+                              {% endfor %}
+                            </div>
+                            {% endif %}
+                          </div>
+                        <div class="mb-3 form-check">
+                          {{ form.public }}
+                          <label for="{{ form.public.id_for_label }}" class="form-check-label">
+                            {{ form.public.label }}
+                          </label>
+                        </div>
 
-                 <div class="row">
-                  <div class="col-md-9 mb-3">
-                    <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}:</label>
-                    {{ form.description }}
-                    {% if form.description.errors %}
-                    <div class="alert alert-danger mt-1" role="alert">
-                      {% for error in form.description.errors %}
-                        {{ error }}
-                      {% endfor %}
-                    </div>
-                    {% endif %}
-                  </div>
-                    {# test block  TAG  Start #}
-                  <div class="col-md-3">
-                    <h5>Теги:</h5>
-                    <span class="badge bg-primary me-2 mb-1">Python</span>
-                    <span class="badge bg-success me-2 mb-1">List Comprehension</span>
-                    <span class="badge bg-warning text-dark me-2 mb-1">Tutorial</span>
-                    <span class="badge bg-danger me-2 mb-1">Algorithms</span>
-                    <span class="badge bg-dark me-2 mb-1">Efficiency</span>
-                    <span class="badge bg-primary me-2 mb-1">Pythonic</span>
-                    <span class="badge bg-secondary me-2 mb-1">Beginner</span>
-                    <span class="badge bg-success me-2 mb-1">Advanced</span>
-                  </div>
-                  {# test block  TAG  Finish #}
-                </div>
+                        <div class="mb-3">
+                          <label for="{{ form.lang.id_for_label }}" class="form-label">{{ form.lang.label }}</label>
+                          {{ form.lang }}
+                          {% if form.lang.errors %}
+                          <div class="alert alert-danger mt-1" role="alert">
+                            {% for error in form.lang.errors %}
+                              {{ error }}
+                            {% endfor %}
+                          </div>
+                          {% endif %}
+                        </div>
+                      </div>
 
+                      <!-- Правая колонка: селект тегов -->
+                      <div class="col-md-3">
+                          {# test block  TAG  Start #}
+                          <label for="{{ form.tags.id_for_label }}" class="form-label">{{ form.tags.label }}</label>
+                          {{ form.tags }}
+                          {% if form.tags.errors %}
+                          <div class="alert alert-danger mt-1" role="alert">
+                            {% for error in form.tags.errors %}
+                              {{ error }}
+                            {% endfor %}
+                          </div>
+                          {% endif %}
+                          {# test block  TAG  Finish #}
+                      </div>
+                    </div>
+                          <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}:</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                            <div class="alert alert-danger mt-1" role="alert">
+                              {% for error in form.description.errors %}
+                                {{ error }}
+                              {% endfor %}
+                            </div>
+                            {% endif %}
+                          </div>
                   <div class="mb-3">
                     <label for="{{ form.code.id_for_label }}" class="form-label">{{ form.code.label }}:</label>
                     {{ form.code }}

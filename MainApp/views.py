@@ -37,8 +37,12 @@ def add_snippet_page(request):
             description = form.cleaned_data['description']
             code = form.cleaned_data['code']
             public = form.cleaned_data['public']
-            print(name, lang, description, code, public)
-            Snippet.objects.create(name=name, lang=lang, code=code, description=description, user_id=request.user.id , public=public)
+            tags = form.cleaned_data['tags'] # QuerySet тегов
+            # print("\n\n")
+            # print(tags)
+            snippet = Snippet.objects.create(name=name, lang=lang, code=code, description=description, user_id=request.user.id , public=public)
+            snippet.tags.set(tags)  # или snippet.tags.add(*tags)
+            # print("\n\n")
             return redirect('snippets-list')
         else:
             context = {'form': form, 'edit': False, 'pagename': 'Создание Сниппета'}
@@ -133,6 +137,8 @@ def snippet_detail(request, id):
     comments = snippet.comments.all()
     comments_count = len(comments)
 
+    tags = snippet.tags.all()
+
     sort = request.GET.get('sort')
     if sort is not None:
         # print(f"\n\n\n\nsort: {sort}\n\n\n\n")
@@ -144,7 +150,8 @@ def snippet_detail(request, id):
                         'comments': comments,
                         'comment_form': comment_form,
                         'comments_count': comments_count,
-                        'sort': sort,
+                        'sort': sort, # sort comments!
+                        'tags': tags,
                         }
     return render(request, 'pages/snippet.html', context)
 
