@@ -5,7 +5,7 @@ from django.contrib import auth # Импортируем модуль auth
 from django.db.models import F, Q, Count, Avg
 from MainApp.models import Snippet, Comment, LANG_CHOICES
 from MainApp.forms import SnippetForm, UserRegistrationForm, CommentForm
-from MainApp.models import LANG_ICON
+from MainApp.models import LANG_ICON, Tag
 from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
@@ -66,12 +66,12 @@ def snippets_page(request, snippets_my):
             snippets = Snippet.objects.filter(Q(public=True) | Q(public=False, user=request.user))
         pagename = "Просмотр сниппетов"
 
-    form = SnippetForm()
-
+    # form = SnippetForm()
     # if not request.user.is_authenticated:
     #     snippets = Snippet.objects.filter(public=True)
     # else:
     #     snippets = Snippet.objects.filter(Q(public=True) | Q(public=False, user_id=request.user.id))
+
     sort = request.GET.get('sort')
     if sort is not None:
         # print(f"\n\n\n\nsort: {sort}\n\n\n\n")
@@ -84,10 +84,14 @@ def snippets_page(request, snippets_my):
     if user_id:
         snippets = snippets.filter(user__id=user_id)
 
+    tag = request.GET.get("tag")
+    if tag:
+        snippets = snippets.filter(tags__name=tag)
+
     snippet_count= len(snippets)
-    # for snippet in snippets:
     for snippet in snippets:
         snippet.icon = get_icon(snippet.lang)
+        snippet.tags_detail = snippet.tags.all()
 
     # paginator
     paginator = Paginator(snippets, 10)  # Показывать по 10 сниппетов на странице
@@ -108,6 +112,8 @@ def snippets_page(request, snippets_my):
                # 'users': User.objects.all(),
                'users': active_users,
                'lang': lang,
+               'all_tags': Tag.objects.all(),
+               'tag': tag,
                }
     return render(request, 'pages/view_snippets.html', context)
 
@@ -155,36 +161,6 @@ def snippet_detail(request, id):
                         }
     return render(request, 'pages/snippet.html', context)
 
-    # try:
-    #     snippets = Snippet.objects.get(id=id)
-    #     context = {'pagename': 'Просмотр сниппета',
-    #                    'snippets': snippets,}
-    #     return render(request, 'pages/snippet.html', context)
-    # except Snippet.DoesNotExist:
-    #     raise Http404
-
-# def snippet_create(request):
-#     if request.method == 'GET':
-#         form = SnippetForm()
-#         print(f"FORM METHOD -> {request.method}")
-#         return render(request, 'pages/add_snippet.html', {'form': form})
-#
-#     if request.method == 'POST':
-#         form = SnippetForm(request.POST)
-#         print(f"FORM DATA: {request.POST}")
-#         print(f"request.method == 'POST' FORM: {form}")
-#         if form.is_valid():
-#             # form.save()
-#             name = form.cleaned_data['name']
-#             lang = form.cleaned_data['lang']
-#             description = form.cleaned_data['description']
-#             code = form.cleaned_data['code']
-#             Snippet.objects.create(name=name, lang=lang, code=code, description=description)
-#
-#             return redirect('snippets-list')
-#         else:
-#             return render(request, 'pages/add_snippet.html',
-#                           {'form': form, 'pagename': "Создание Сниппет"})
 
 @login_required
 def snippet_delete(request, id):
@@ -201,9 +177,11 @@ def snippet_edit(request, id):
     if request.method == 'GET':
         form =SnippetForm(initial={
             'name': snippet.name,
+            'public':snippet.public,
             'lang': snippet.lang,
             'code': snippet.code,
             'description': snippet.description,
+            'tags': snippet.tags.all(),
         })
         # print(f"StartFORM ->\n{form}\nendFORM")
     # context = {'form': form, 'edit': True,'id': id}
@@ -225,6 +203,8 @@ def snippet_edit(request, id):
             snippet.lang = form.cleaned_data['lang']
             snippet.code = form.cleaned_data['code']
             snippet.description = form.cleaned_data['description']
+            tags = form.cleaned_data['tags']  # QuerySet тегов
+            snippet.tags.add(*tags)  # или snippet.tags.set(*tags)
             snippet.save()
             return redirect('snippets-list')
         else:

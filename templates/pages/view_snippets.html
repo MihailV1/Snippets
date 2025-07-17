@@ -26,7 +26,18 @@
                                 {% endfor %}
                             </select>
                         </div>
-
+                        <div class="d-flex align-items-center gap-2 flex-grow-1">
+                            <label class="form-label mb-0 text-nowrap">
+                                <i class="fas fa-code me-1"></i> Теги:
+                            </label>
+                            <select name="tag" class="form-select">
+                                <option value="">Теги</option>
+                                {% for t in all_tags %}
+                                    <option {% if tag == t.name %} selected {% endif %} value="{{ t.name }}">
+                                        {{ t.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         <div class="d-flex align-items-center gap-2 flex-grow-1">
                             <label for="authorFilter" class="form-label mb-0 text-nowrap">
                                 <i class="fas fa-user me-1"></i> Автор:
@@ -117,17 +128,20 @@
                      {% for snippet in page_obj %}
                          <tr>
                             <td class="col-1">{{ snippet.id }}</td>
-                            <td class="col-4">
+                            <td class="col-7">
                                 <i class="{{ snippet.icon }}"></i>
                                 <a href="{% url 'snippet-id' snippet.id %}">{{ snippet.name }}</a>
+                                {% for tag in snippet.tags_detail %}
+                                    <span class="badge bg-primary me-2 mb-1 small">{{ tag }}</span>
+                                {% endfor %}
                                 {% if  request.user == snippet.user %}
                                 <a href="{% url 'snippet-edit' snippet.id %}"><i class="fa-solid fa-pen"></i></a>
                                 <a href="{% url 'snippet-delete' snippet.id %}"><i style="color: #564242" class="fa-solid fa-trash"></i></a>
                                 {% endif %}
                             </td>
-                            <td class="col-2">{{ snippet.lang }}</td>
-                            <td class="col-3">{{ snippet.creation_date|date:"d.m.Y H:i" }}</td>
-                            <td class="col-2">
+                            <td class="col-1">{{ snippet.lang }}</td>
+                            <td class="col-2">{{ snippet.creation_date|date:"d.m.Y H:i" }}</td>
+                            <td class="col-1">
                                 {% if snippet.public == False %}
                                     <i style="color: #524d4d" class="fa-solid fa-lock"></i>
                                 {% endif %}{{ snippet.user | default_if_none:"Аноним"}}
