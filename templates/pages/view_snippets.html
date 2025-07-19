@@ -30,28 +30,29 @@
                             <label class="form-label mb-0 text-nowrap">
                                 <i class="fas fa-code me-1"></i> Теги:
                             </label>
-                            <select name="tag" class="form-select">
+                            <select name="tags" multiple size="3" class="form-select">                       {# TAG SELECT #}
                                 <option value="">Теги</option>
-                                {% for t in all_tags %}
-                                    <option {% if tag == t.name %} selected {% endif %} value="{{ t.name }}">
-                                        {{ t.name }}</option>
+                                {% for tag in all_tags %}
+                                    <option {% if tag == tag.name %} selected {% endif %} value="{{ tag.name }}">
+                                        {{ tag.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="d-flex align-items-center gap-2 flex-grow-1">
-                            <label for="authorFilter" class="form-label mb-0 text-nowrap">
-                                <i class="fas fa-user me-1"></i> Автор:
-                            </label>
-                            <select name="user_id" class="form-select">
-                                <option value="" selected>Все авторы</option>
-                                {% for user in users %}
-                                    <option {% if request.GET.user_id == user.id|stringformat:"s" %} selected {% endif %} value="{{ user.id }}">
-                                        {{ user.username }} ({{ user.snippet_count }})</option>
-                                {% endfor %}
+                        {% if not snippets_my %}
+                            <div class="d-flex align-items-center gap-2 flex-grow-1">
+                                <label for="authorFilter" class="form-label mb-0 text-nowrap">
+                                    <i class="fas fa-user me-1"></i> Автор:
+                                </label>
+                                <select name="user_id" class="form-select">
+                                    <option value="" selected>Все авторы</option>
+                                    {% for user in users %}
+                                        <option {% if request.GET.user_id == user.id|stringformat:"s" %} selected {% endif %} value="{{ user.id }}">
+                                            {{ user.username }} ({{ user.snippet_count }})</option>
+                                    {% endfor %}
 
-                            </select>
-                        </div>
-
+                                </select>
+                            </div>
+                        {% endif %}
                         <div>
                             <button type="submit" class="btn btn-primary">Применить фильтры</button>
                         </div>
@@ -131,7 +132,7 @@
                             <td class="col-7">
                                 <i class="{{ snippet.icon }}"></i>
                                 <a href="{% url 'snippet-id' snippet.id %}">{{ snippet.name }}</a>
-                                {% for tag in snippet.tags_detail %}
+                                {% for tag in snippet.tags_details %}
                                     <span class="badge bg-primary me-2 mb-1 small">{{ tag }}</span>
                                 {% endfor %}
                                 {% if  request.user == snippet.user %}
@@ -210,7 +211,5 @@
         </div>
     </div>
     </div>
-    {# test block  TAG  Start #}
 
-    {# test block  TAG  Finish #}
 {% endblock %}

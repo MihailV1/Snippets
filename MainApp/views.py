@@ -84,14 +84,21 @@ def snippets_page(request, snippets_my):
     if user_id:
         snippets = snippets.filter(user__id=user_id)
 
-    tag = request.GET.get("tag")
-    if tag:
-        snippets = snippets.filter(tags__name=tag)
-
+    # tags = request.GET.get("tags")    #  вернёт только одно (последнее) значение
+    tags = request.GET.getlist("tags") # все значения как список.
+    if tags:
+        for tag in tags:
+            print(f"tag: {tag}")
+        snippets = snippets.filter(tags__name__in=tags).distinct() # distinct() нужен, чтобы избежать дубликатов, если сниппет совпал по нескольким тегам.
+        for snippet in snippets:
+            print(f"snippet.tags.name: {snippet}")
     snippet_count= len(snippets)
     for snippet in snippets:
         snippet.icon = get_icon(snippet.lang)
-        snippet.tags_detail = snippet.tags.all()
+        if tags:
+            snippet.tags_details = snippet.tags.filter(name__in=tags)
+        else:
+            snippet.tags_details = snippet.tags.all()
 
     # paginator
     paginator = Paginator(snippets, 10)  # Показывать по 10 сниппетов на странице
@@ -113,7 +120,7 @@ def snippets_page(request, snippets_my):
                'users': active_users,
                'lang': lang,
                'all_tags': Tag.objects.all(),
-               'tag': tag,
+               'snippets_my': snippets_my,
                }
     return render(request, 'pages/view_snippets.html', context)
 
