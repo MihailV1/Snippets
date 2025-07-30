@@ -2,6 +2,7 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 from MainApp import views
+from django.contrib import admin
 
 urlpatterns = [
     # path('', include('MainApp.urls')),
@@ -17,6 +18,7 @@ urlpatterns = [
     path('registration/', views.user_registration, name='registration'),
     path('comment/add', views.comment_add, name="comment_add"),
     path('stats/', views.stats_snippets, name="stats_snippets"),
+    path('admin/', admin.site.urls),
 ]
 # snippets/list
 # snippets/list?sort=name

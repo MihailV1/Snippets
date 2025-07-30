@@ -87,11 +87,11 @@ def snippets_page(request, snippets_my):
     # tags = request.GET.get("tags")    #  вернёт только одно (последнее) значение
     tags = request.GET.getlist("tags") # все значения как список.
     if tags:
-        for tag in tags:
-            print(f"tag: {tag}")
+        # for tag in tags:
+        #     # print(f"tag: {tag}")
         snippets = snippets.filter(tags__name__in=tags).distinct() # distinct() нужен, чтобы избежать дубликатов, если сниппет совпал по нескольким тегам.
-        for snippet in snippets:
-            print(f"snippet.tags.name: {snippet}")
+        # for snippet in snippets:
+        #     print(f"snippet.tags.name: {snippet}")
     snippet_count= len(snippets)
     for snippet in snippets:
         snippet.icon = get_icon(snippet.lang)
