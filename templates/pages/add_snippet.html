@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
     <div class="container">
     <div class="row">
@@ -108,6 +110,7 @@
                       {% endfor %}
                     </div>
                     {% endif %}
+                      <div id="charCount" >0/5000</div>
                   </div>
 {#                   <input type="submit" class="btn" value="Сохранить">#}
 {#                </form>#}
@@ -116,5 +119,10 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block script %}
+    {{ block.super }}
+    <script src="{% static 'js/forms.js' %}"></script>
 {% endblock %}
 

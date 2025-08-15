@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    function findLongestWord(words) {
+        let longestWord = words[0];
+        for (let word of words){
+            if (word.length > longestWord.length) {
+                longestWord = word;
+            }
+        }
+        return longestWord;
+    }
+
+const words = ["apple", "banana", "kiwi", "grapefruit"];
+console.log(findLongestWord(words));
+</script>
+TASK1
+<br>
+<p>Задача-1 "Поиск самого длинного слова"<br>
+    Напишите функцию, которая принимает массив строк и возвращает самое длинное слово.</p>
+<div id="fist">Fierst</div>
+<div class="test">DDDDD dddd</div>
+ <ul>
+   <li class="list-item">Первый</li>
+   <li class="list-item">Второй</li>
+   <li class="list-item">Третий</li>
+</ul>
+<button id="my-button">test</button>
+<script>
+    const button = document.querySelector('#my-button')
+    function handleClick() {
+   alert('Кнопка была нажата!');
+}
+
+button.addEventListener('click', handleClick);
+
+</script>
+</body>
+</html>

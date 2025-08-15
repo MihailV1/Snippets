@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    function countVowels(str) {
+      const vowels = "aeiou";
+      let count = 0;
+
+      for (let char of str.toLowerCase()) {
+        if (vowels.includes(char)) {
+          count++;
+        }
+  }
+
+  return count;
+    }
+
+    console.log(countVowels("hello world and I"))
+</script>
+TASK1
+<br>
+<p>Напишите функцию, которая принимает строку и возвращает количество гласных букв в ней (a, e, i, o, u).</p>
+
+</body>
+</html>

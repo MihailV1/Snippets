@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
+from django.contrib.messages import constants as messages
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -131,6 +133,7 @@ LOGIN_URL = '/login/'
 # Default type for auto-created primary keys
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
 # LOGGING = {
 # 'version': 1,
 # 'disable_existing_loggers': False, # Не отключаем существующие логгеры
@@ -158,3 +161,54 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     },
 # }
 # }
+
+LOGGING = {
+'version': 1,
+'disable_existing_loggers': False,
+
+'formatters': {
+    'verbose': {
+        'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+        'style': '{',
+    },
+    'simple': {
+        'format': '{levelname} {message}',
+        'style': '{',
+    },
+},
+
+'handlers': {
+    'file': {
+        'level': 'DEBUG',
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': BASE_DIR / 'django_debug.log',
+        'maxBytes': 1024 * 1024 * 5,  # 5 MB
+        'backupCount': 5,
+        'formatter': 'verbose',
+        'encoding': 'utf-8',
+    },
+    'console': {
+        'level': 'INFO',
+        'class': 'logging.StreamHandler',
+        'formatter': 'simple',
+    },
+},
+
+'loggers': {
+    'django': {
+        'handlers': ['console'],
+        'level': 'INFO',
+        'propagate': False,
+    },
+    'MainApp': {
+        'handlers': ['file'],
+        'level': 'DEBUG',
+        'propagate': False,
+    },
+},
+}
+
+# Django Extensions Shell Plus Configuration
+SHELL_PLUS_PRE_IMPORTS = [
+    ('MainApp.factories', ('UserFactory', 'TagFactory', 'SnippetFactory', 'CommentFactory')),
+]

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="text">
+   Исходный текст
+</div>
+<button>Click</button>
+<script>
+    let textElement = document.getElementById("text");
+    let button = document.querySelector('button');
+    function handleClick() {
+       textElement.innerText = 'Кнопка нажата!';
+    }
+    button.addEventListener('click', handleClick);
+
+    //let textElement = document.getElementById("text");
+    //let button = document.querySelector('button');
+
+    //button.addEventListener('click', () => {
+       //textElement.innerText = 'Кнопка нажата!';
+    //});
+
+</script>
+
+
+
+</body>
+</html>

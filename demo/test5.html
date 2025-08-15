@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+
+
+
+    function findDuplicatesEvgenyi(numbers) {
+    // 1. Объект с количеством элементов
+        let countNumbers = {};
+        let result = [];
+        for (let number of numbers) {
+            if (countNumbers.hasOwnProperty(number)) {
+            countNumbers[number] += 1;
+            }else{
+            countNumbers[number] = 1;
+            }
+        }
+        // 2. Взять из объекта, элементы с количеством больше 1
+        for (let number in countNumbers){
+            if (countNumbers[number] > 1){
+            result.push(number);
+            }
+        }
+        return result;
+    }
+    const numbers = [1, 2, 7, 3, 4, 6, 7, 2, 5, 1, 2, 7];
+    const numbers1 = [1, 2, 3, 4, 2, 5, 1];
+    console.log(findDuplicatesEvgenyi(numbers1)); // [1, 2]
+    console.log(findDuplicatesEvgenyi(numbers));
+
+
+</script>
+
+
+<p>Напишите функцию, которая принимает массив чисел и возвращает массив уникальных дубликатов, которые были найдены</p>
+<br>
+function findDuplicates(arr) {
+      const duplicates = [];
+
+      for (let i = 0; i < arr.length; i++) {
+        for (let j = i + 1; j < arr.length; j++) {
+          if (arr[i] === arr[j] && !duplicates.includes(arr[i])) {
+            duplicates.push(arr[i]);
+          }
+        }
+      }
+
+      return duplicates;
+    }
+
+    const numbers = [1, 2, 7, 3, 4, , 7, 2, 5, 1, 2, 7];
+    console.log(findDuplicates(numbers)); // [1, 2]
+</body>
+</html>

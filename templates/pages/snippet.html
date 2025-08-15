@@ -1,4 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/copyBuffer.css' %}">
+{% endblock %}
+
 {% block content %}
     <!-- Begin page content -->
     <div class="container">
@@ -43,25 +49,23 @@
                 {% else %}
                   <p class="text-muted">Поки щє тут немає тегів 😕</p>
                 {% endif %}
-{#                    <span class="badge bg-success me-2 mb-1">List Comprehension</span>#}
-{#                    <span class="badge bg-warning text-dark me-2 mb-1">Tutorial</span>#}
-{#                    <span class="badge bg-danger me-2 mb-1">Algorithms</span>#}
-{#                    <span class="badge bg-dark me-2 mb-1">Efficiency</span>#}
-{#                    <span class="badge bg-primary me-2 mb-1">Pythonic</span>#}
-{#                    <span class="badge bg-secondary me-2 mb-1">Beginner</span>#}
-{#                    <span class="badge bg-success me-2 mb-1">Advanced</span>#}
                 </div>
                     {# test block  TAG  Finish #}
            </div>
             <hr>
            <div class="row">
-               <div class="col">
+               <div class="col-11">
                    <div class="p-2 h-100" style="border:1px solid #ced4da; border-radius:5px;">
                        <p>
-                           Code:<textarea  name="code" class="form-control" style="height: calc(30vh + 10px)">{{ snippet.code }}
+                           Code:<textarea id="codeSnippet"  name="code" class="form-control" style="height: calc(30vh + 10px)">{{ snippet.code }}
                        </textarea>
                        </p>
                    </div>
+               </div>
+               <div class="col-1">
+                    <a class="copy-button d-flex justify-content-end" onclick="copyFromInput()"  id="codeCopy">
+                       Copy
+                   </a>
                </div>
            </div>
         </fieldset>
@@ -139,4 +143,8 @@
     </div>
 </div>
 
+{% endblock %}
+{% block script %}
+    {{ block.super }}
+    <script src="{% static 'js/form_snippet.js' %}"></script>
 {% endblock %}

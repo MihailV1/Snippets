@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    const data = { a: 2, b: 2, c: 3 };
+    let sum = 0;
+    function sumObjectValues(obj) {
+      for (let key in obj) {
+          sum += obj[key];
+      }
+        return sum;
+    }
+
+    console.log(sumObjectValues(data));
+</script>
+<p>
+    Напишите функцию, которая принимает объект с числовыми значениями и возвращает их сумму.
+</p>
+</body>
+</html>

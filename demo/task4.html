@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script>
+    const fruits = ["apple", "banana"];
+
+    function createObjectFromKeys(arr) {
+      let result = {};
+      for (let item of arr) {        // перебираем сами элементы
+        result[item] = item.length;  // ключ — слово, значение — его длина
+      }
+      return result;
+    }
+
+    console.log(createObjectFromKeys(fruits));
+// Ожидаемый результат: { apple: 5, banana: 6 }
+</script>
+<body>
+
+</body>
+</html>

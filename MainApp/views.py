@@ -1,5 +1,5 @@
 from django.core.exceptions import PermissionDenied
-from django.http import Http404 , HttpResponse#, Http403
+from django.http import Http404, HttpResponse, HttpResponseForbidden  # , Http403, HttpResponseForbidden
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import auth # Импортируем модуль auth
 from django.db.models import F, Q, Count, Avg
@@ -10,26 +10,39 @@ from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
+from django.contrib import messages
+from MainApp.signals import snippet_view
+import logging
+
+# Получаем экземпляр логгера
+# Если вы настроили собственный логгер, используйте его имя, например:
+logger = logging.getLogger(__name__) # Рекомендуется использовать имя текущего модуля
+
+
 
 def get_icon(lang):
     return LANG_ICON.get(lang)
 
+# error -> danger
+# debug -> dark
 
 def index_page(request):
     context = {'pagename': 'PythonBin'}
+    messages.info(request, ' messages.info...')
+    messages.warning(request, 'messages.warning...')
+    # messages.error(request, 'messages.error...')
+    messages.debug(request, 'messages.debug...')
     return render(request, 'pages/index.html', context)
 
 @login_required
 def add_snippet_page(request):
     if request.method == 'GET':
         form = SnippetForm()
-        # print(f"FORM METHOD -> {request.method}")
         context = {'pagename': 'Создание Сниппета', 'edit': False, 'form': form}
         return render(request, 'pages/add_snippet.html', context)
 
     if request.method == 'POST':
         form = SnippetForm(request.POST)
-        # print(f"FORM DATA: {request.POST}")
         if form.is_valid():
             # form.save()
             name = form.cleaned_data['name']
@@ -38,14 +51,13 @@ def add_snippet_page(request):
             code = form.cleaned_data['code']
             public = form.cleaned_data['public']
             tags = form.cleaned_data['tags'] # QuerySet тегов
-            # print("\n\n")
-            # print(tags)
             snippet = Snippet.objects.create(name=name, lang=lang, code=code, description=description, user_id=request.user.id , public=public)
             snippet.tags.set(tags)  # или snippet.tags.add(*tags)
-            # print("\n\n")
+            messages.info(request, f'Пользователь {snippet.user} успешно СОЗДАЛ сниппет (id={snippet.id})')
             return redirect('snippets-list')
         else:
             context = {'form': form, 'edit': False, 'pagename': 'Создание Сниппета'}
+            messages.error(request, f"Форма заполнена не верно")
             return render(request, 'pages/add_snippet.html',
                           context)
 
@@ -107,10 +119,10 @@ def snippets_page(request, snippets_my):
 
     # Только пользователи, у которых есть хотя бы один сниппет
     active_users = User.objects.annotate(snippet_count=Count('snippet', filter=Q(snippet__public=True))).filter(snippet_count__gt=0)
-    context = {'pagename': pagename,
+    context = {'pagename': pagename, # 'true' if snippets_my else 'false'
                # 'snippets': snippets,
                # 'snippets': page_obj.object_list, # Это то же самое, что page_obj в цикле for в шаблоне
-               'page_obj': page_obj,
+               'page_obj': page_obj, 
                'snippet_count': snippet_count,
                'icon': get_icon(snippets),
                 # 'public': snippet.public,
@@ -141,9 +153,12 @@ def snippets_page(request, snippets_my):
 def snippet_detail(request, id):
     # snippet = get_object_or_404(Snippet, id=id)
     snippet = Snippet.objects.prefetch_related('comments').get(id=id) #.order_by('lang','-creation_date')
-    snippet.views_count = F('views_count') + 1
-    snippet.save(update_fields=['views_count'])
-    snippet.refresh_from_db()
+    if snippet.user != request.user and snippet.public is False:
+        return HttpResponseForbidden("You are not authorized to see this snippet")
+    snippet_view.send(sender=None, snippet=snippet)
+    # snippet.views_count = F('views_count') + 1
+    # snippet.save(update_fields=['views_count'])
+    # snippet.refresh_from_db()
     # comments = Comment.objects.filter(snippet_id=id)
     # comments = snippet.comment_set.all().order_by('-creation_date') # Получаем все комментарии для данного сниппета
 
@@ -159,6 +174,7 @@ def snippet_detail(request, id):
     # print(f"------------\n\n\n\ncomments_count = {comments_count}\n\n\n\n-------------")
     comment_form = CommentForm() # Передаем пустую форму для добавления комментариев
     context = {'pagename': 'Просмотр сниппета',
+                        'pagename': f'Сниппет: {snippet.name}',
                        'snippet': snippet,
                         'comments': comments,
                         'comment_form': comment_form,
@@ -173,8 +189,11 @@ def snippet_detail(request, id):
 def snippet_delete(request, id):
     snippet = get_object_or_404(Snippet, id=id)
     if snippet.user != request.user:
+        logger.warning("Пользователь '%s' НЕ ИМЕЕТ право удалить этот сниппет (id=%d)", snippet.user, snippet.id)
         context = {'pagename': 'Э! Какой умный!'}
         return render(request, 'pages/index.html', context)
+    logger.info("Пользователь '%s' успешно удалил сниппет (id=%d)", snippet.user, snippet.id)
+    messages.info(request, f'Пользователь { snippet.user} успешно удалил сниппет (id={snippet.id})')
     snippet.delete()
     return redirect('snippets-list')
 
@@ -255,36 +274,71 @@ def user_logout(request):
     return redirect('home')
 
 def user_registration(request):
-    if request.method == "GET":
-        user_form = UserRegistrationForm()
-        context = {
-            "user_form": user_form, 'pagename': 'Регистрация'
-        }
-        return render(request, "pages/registration.html", context)
-
-    if request.method == "POST":
-        user_form = UserRegistrationForm(request.POST)
-        if user_form.is_valid():
-            user_form.save()
-            return redirect("home")
-        else:
-            context = {'user_form': user_form, 'pagename': 'Регистрация'}
+    try:
+        if request.method == "GET":
+            user_form = UserRegistrationForm()
+            context = {
+                "user_form": user_form,
+                'pagename': 'Регистрация'
+            }
             return render(request, "pages/registration.html", context)
 
+        if request.method == "POST":
+            post_data = request.POST.copy()
+            # post_data.pop('csrfmiddlewaretoken', None)  # Удаляем ключ, если есть
+            for key in ['csrfmiddlewaretoken', 'password1', 'password2']:
+                post_data.pop(key, None)
+            logger.debug("POST запрос на регистрацию пользователя. Данные: %s", post_data.dict())
+            user_form = UserRegistrationForm(request.POST)
+            if user_form.is_valid():
+                user = user_form.save()
+                logger.info("Пользователь '%s' успешно зарегистрирован (id=%d)", user.username, user.id)
+                messages.success(request, f"User {user.username} pasted successfully!")
+                return redirect("home")
+            else:
+                logger.warning("Ошибка регистрации. Ошибки формы: %s", user_form.errors.as_json())
+                context = {'user_form': user_form, 'pagename': 'Регистрация'}
+                return render(request, "pages/registration.html", context)
+    except Exception as e:
+        # Логируем исключение и стек вызовов
+        logger.exception("Ошибка в функции user_registration: %s", str(e))
+        messages.error(request, "Произошла непредвиденная ошибка! Попробуйте еще раз.")
+        return redirect("home")
+# def user_registration(request):
+#     if request.method == "GET":
+#         user_form = UserRegistrationForm()
+#         context = {
+#             "user_form": user_form, 'pagename': 'Регистрация'
+#         }
+#         return render(request, "pages/registration.html", context)
+#
+#     if request.method == "POST":
+#         user_form = UserRegistrationForm(request.POST)
+#         if user_form.is_valid():
+#             user = user_form.save()
+#             messages.success(request, f"User {user.username} pasted successfully!")
+#             return redirect("home")
+#         else:
+#             context = {'user_form': user_form, 'pagename': 'Регистрация'}
+#             return render(request, "pages/registration.html", context)
 
+@login_required
 def comment_add(request):
    if request.method == "POST":
-      comment_form = CommentForm(request.POST)
-      snippet_id = request.POST.get('snippet_id') # Получаем ID сниппета из формы
-      snippet = get_object_or_404(Snippet, id=snippet_id)
-      # print(f"\n\n\n\n------------------------------>snippet_id = {snippet_id}\n\n\n\n")
-      if comment_form.is_valid():
-         comment = comment_form.save(commit=False)
-         comment.author = request.user # Текущий авторизованный пользователь
-         comment.snippet = snippet
-         comment.save()
-
-      return redirect('snippet-id', id=snippet_id) # Предполагаем, что у вас есть URL для деталей сниппета с параметром pk
+        snippet_id = request.POST.get('snippet_id') # Получаем ID сниппета из формы
+        snippet = get_object_or_404(Snippet, id=snippet_id)
+        if not request.user.is_authenticated:
+            messages.error(request, "Вы должны войти в систему, чтобы оставить комментарий.")
+            # return redirect('snippet-id', id=snippet_id)
+            return redirect('registration')
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.author = request.user # Текущий авторизованный пользователь
+            comment.snippet = snippet
+            comment.save()
+            messages.info(request, f'Пользователь {snippet.user} успешно ОСТАВИЛ комментарий (id={snippet.name})')
+        return redirect('snippet-id', id=snippet_id) # Предполагаем, что у вас есть URL для деталей сниппета с параметром pk
 
    raise Http404
 
