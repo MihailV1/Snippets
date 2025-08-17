@@ -9,7 +9,7 @@ function deleteMessages(){
     let step = 800;
     let numMessage = 0;
     for (let message of messages){
-        setTimeout(deleteMessage,2000 + step*numMessage, message);
+        setTimeout(deleteMessage,4000 + step*numMessage, message);
         console.log(`${numMessage}`)
         numMessage++;
     }

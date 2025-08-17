@@ -39,3 +39,10 @@
         .copy-button.error::before {
             content: "❌";
         }
+
+        #buttonCom:disabled {
+            background-color: #ccc;   /* серый фон */
+            color: #666;              /* тусклый текст */
+            cursor: not-allowed;      /* курсор "запрещено" */
+            opacity: 0.7;             /* немного прозрачности */
+        }

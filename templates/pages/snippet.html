@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block css %}
-<link rel="stylesheet" href="{% static 'css/copyBuffer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/copyBuffer.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -16,61 +16,65 @@
         </div>
 
         <fieldset disabled>
-           <div class="row disabled">
-               <div class="col col-5">
-                   Название: <input type="text" value="{{ snippet.name }}" class="form-control">
-               </div>
-               <div class="col col-3">
-                   Язык програмирования: <input type="text" value="{{ snippet.lang }}" class="form-control">
-               </div>
-               <div class="col col-2">
-                   Дата создания:<input type="text" value="{{ snippet.creation_date|date:'d.m.Y H:i' }}" class="form-control">
-               </div>
-               <div class="col col-2">
-                   Дата редактирования:<input type="text" value="{{ snippet.update_at|date:'d.m.Y H:i' }}" class="form-control">
-               </div>
-           </div>
-           <hr>
-           <div class="row">
-               <div class="col">
-                   <div class="p-2 h-100" style="border:1px solid #ced4da; border-radius:5px;">
-                       <p>
-                           Description:<input type="text" value="{{ snippet.description }}" class="form-control" style="height: calc(10vh + 10px)">
-                       </p>
-                   </div>
-               </div>
-                   {# test block  TAG  Start #}
-                <div class="col-md-3">
-                <h5>Теги:</h5>
-                {% if tags %}
-                  {% for tag in tags %}
-                    <span class="badge bg-primary me-2 mb-1">{{ tag }}</span>
-                  {% endfor %}
-                {% else %}
-                  <p class="text-muted">Поки щє тут немає тегів 😕</p>
-                {% endif %}
+            <div class="row disabled">
+                <div class="col col-5">
+                    Название: <input type="text" value="{{ snippet.name }}" class="form-control">
                 </div>
-                    {# test block  TAG  Finish #}
-           </div>
+                <div class="col col-3">
+                    Язык програмирования: <input type="text" value="{{ snippet.lang }}" class="form-control">
+                </div>
+                <div class="col col-2">
+                    Дата создания:<input type="text" value="{{ snippet.creation_date|date:'d.m.Y H:i' }}"
+                                         class="form-control">
+                </div>
+                <div class="col col-2">
+                    Дата редактирования:<input type="text" value="{{ snippet.update_at|date:'d.m.Y H:i' }}"
+                                               class="form-control">
+                </div>
+            </div>
             <hr>
-           <div class="row">
-               <div class="col-11">
-                   <div class="p-2 h-100" style="border:1px solid #ced4da; border-radius:5px;">
-                       <p>
-                           Code:<textarea id="codeSnippet"  name="code" class="form-control" style="height: calc(30vh + 10px)">{{ snippet.code }}
+            <div class="row">
+                <div class="col">
+                    <div class="p-2 h-100" style="border:1px solid #ced4da; border-radius:5px;">
+                        <p>
+                            Description:<input type="text" value="{{ snippet.description }}" class="form-control"
+                                               style="height: calc(10vh + 10px)">
+                        </p>
+                    </div>
+                </div>
+                {# test block  TAG  Start #}
+                <div class="col-md-3">
+                    <h5>Теги:</h5>
+                    {% if tags %}
+                        {% for tag in tags %}
+                            <span class="badge bg-primary me-2 mb-1">{{ tag }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Поки щє тут немає тегів 😕</p>
+                    {% endif %}
+                </div>
+                {# test block  TAG  Finish #}
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-11">
+                    <div class="p-2 h-100" style="border:1px solid #ced4da; border-radius:5px;">
+                        <p>
+                            Code:<textarea id="codeSnippet" name="code" class="form-control"
+                                           style="height: calc(30vh + 10px)">{{ snippet.code }}
                        </textarea>
-                       </p>
-                   </div>
-               </div>
-               <div class="col-1">
-                    <a class="copy-button d-flex justify-content-end" onclick="copyFromInput()"  id="codeCopy">
-                       Copy
-                   </a>
-               </div>
-           </div>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-1">
+                    <a class="copy-button d-flex justify-content-end" onclick="copyFromInput()" id="codeCopy">
+                        Copy
+                    </a>
+                </div>
+            </div>
         </fieldset>
         <div class="d-flex justify-content-end">
-                    <i class="text-muted">Всего смотрели: {{ snippet.views_count }}</i></div>
+            <i class="text-muted">Всего смотрели: {{ snippet.views_count }}</i></div>
 
         {#  Форма добавления комментария      #}
         <div class="row mt-4">
@@ -86,65 +90,68 @@
                                 <textarea name="text" class="form-control" id="commentText" rows="5"
                                           placeholder="Введите ваш комментарий здесь..." required></textarea>
                             </div>
+                            <div id="charCount">0/500</div>
                             <input type="hidden" name="snippet_id" value="{{ snippet.id }}">
-                            <button type="submit" class="btn btn-primary">Отправить комментарий</button>
+                            <button id="buttonCom" type="submit" class="btn btn-primary">Отправить комментарий</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
         <hr>
-    {# Всего комментариев  #}
-<div class="row">
-    <div class="col-8">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0">Всего комментариев: <span class="badge bg-secondary">{{ comments_count }}</span></h5>
-            {% if sort == "creation_date" %}
-                                <a class="btn btn-outline-secondary btn-sm" href="?sort=-creation_date" role="button">
-                                    <i class="fa-solid fa-arrow-up-wide-short"></i> Сортировка</a>
-                            {% elif sort == "-creation_date" %}
-                                <a class="btn btn-outline-secondary btn-sm" href="?sort=creation_date" role="button">
-                                    <i class="fa-solid fa-arrow-up-short-wide"></i> Сортировка</a>
-                            {% else %}
-                                <a class="btn btn-outline-secondary btn-sm" href="?sort=-creation_date" role="button">
-                                    <i class="fa-solid fa-arrow-up-wide-short"></i> Сортировка</a>
-                            {% endif %}
+        {# Всего комментариев  #}
+        <div class="row">
+            <div class="col-8">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Всего комментариев: <span class="badge bg-secondary">{{ comments_count }}</span>
+                    </h5>
+                    {% if sort == "creation_date" %}
+                        <a class="btn btn-outline-secondary btn-sm" href="?sort=-creation_date" role="button">
+                            <i class="fa-solid fa-arrow-up-wide-short"></i> Сортировка</a>
+                    {% elif sort == "-creation_date" %}
+                        <a class="btn btn-outline-secondary btn-sm" href="?sort=creation_date" role="button">
+                            <i class="fa-solid fa-arrow-up-short-wide"></i> Сортировка</a>
+                    {% else %}
+                        <a class="btn btn-outline-secondary btn-sm" href="?sort=-creation_date" role="button">
+                            <i class="fa-solid fa-arrow-up-wide-short"></i> Сортировка</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {#  Отображение комментариев #}
+        <div class="row mt-4">
+            <div class="col-8">
+                <ul class="list-group mb-3">
+                    {% for comment in comments %}
+                        <li class="list-group-item d-flex align-items-start">
+                            <div class="w-100">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ comment.author }}</h5>
+                                    <small class="text-muted">{{ comment.creation_date|date:"j E Y    H:i" }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    {{ comment.text }}
+                                </p>
+                                <small>
+                                    <a href="#" class="text-decoration-none me-2">Ответить</a>
+                                    <a href="#" class="text-decoration-none me-2">
+                                        <i class="fa-regular fa-thumbs-up"></i>
+                                    </a>
+                                    <a href="#" class="text-decoration-none">
+                                        <i class="fa-solid fa-thumbs-down"></i>
+                                    </a>
+                                </small>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
-</div>
-{#  Отображение комментариев #}
-<div class="row mt-4">
-        <div class="col-8">
-            <ul class="list-group mb-3">
-                {% for comment in comments %}
-                <li class="list-group-item d-flex align-items-start">
-                    <div class="w-100">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{ comment.author }}</h5>
-                            <small class="text-muted">{{ comment.creation_date|date:"j E Y    H:i" }}</small>
-                        </div>
-                        <p class="mb-1">
-                            {{ comment.text }}
-                        </p>
-                        <small>
-                            <a href="#" class="text-decoration-none me-2">Ответить</a>
-                            <a href="#" class="text-decoration-none me-2">
-                                <i class="fa-regular fa-thumbs-up"></i>
-                            </a>
-                            <a href="#" class="text-decoration-none">
-                                <i class="fa-solid fa-thumbs-down"></i>
-                            </a>
-                        </small>
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-</div>
 
 {% endblock %}
 {% block script %}
     {{ block.super }}
     <script src="{% static 'js/form_snippet.js' %}"></script>
+    <script src="{% static 'js/formComment.js' %}"></script>
 {% endblock %}

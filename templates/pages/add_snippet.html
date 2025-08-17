@@ -3,126 +3,115 @@
 
 {% block content %}
     <div class="container">
-    <div class="row">
-        <div class="col">
-            <h1>{{ pagename }}</h1>
-            <hr>
+        <div class="row">
+            <div class="col">
+                <h1>{{ pagename }}</h1>
+                <hr>
+            </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col">
-            {% if edit %}
-                <form action="{% url 'snippet-edit' id %}" method="post">
-            {% else %}
-                <form action="{% url 'snippet-add' %}" method="post">
-            {% endif %}
+        <div class="row">
+            <div class="col">
+                {% if edit %}
+                    <form id="editForm" action="{% url 'snippet-edit' id %}" method="post">
+                {% else %}
+                    <form id="addForm" action="{% url 'snippet-add' %}" method="post">
+                {% endif %}
                 {% csrf_token %}
                 {# Отображение общих ошибок формы, если они есть #}
-                  {% if form.non_field_errors %}
-                  <div class="alert alert-danger" role="alert">
-                    <strong>Ошибки формы:</strong>
-                    <ul>
-                      {% for error in form.non_field_errors %}
-                        <li>{{ error }}</li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                  {% endif %}
-{#                  <div class="mb-3">#}
-{#                    <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}:</label>#}
-{#                    {{ form.name }}#}
-{#                    {% if form.name.errors %}#}
-{#                    <div class="alert alert-danger mt-1" role="alert">#}
-{#                      {% for error in form.name.errors %}#}
-{#                        {{ error }}#}
-{#                      {% endfor %}#}
-{#                    </div>#}
-{#                    {% endif %}#}
-{#                  </div>#}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Ошибки формы:</strong>
+                        <ul>
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
                 <div class="row">
-                      <!-- Левая колонка: чекбокс + язык -->
-                      <div class="col-md-9">
-                          <div class="mb-3">
+                    <!-- Левая колонка: чекбокс + язык -->
+                    <div class="col-md-9">
+                        <div class="mb-3">
                             <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}:</label>
                             {{ form.name }}
                             {% if form.name.errors %}
-                            <div class="alert alert-danger mt-1" role="alert">
-                              {% for error in form.name.errors %}
-                                {{ error }}
-                              {% endfor %}
-                            </div>
+                                <div class="alert alert-danger mt-1" role="alert">
+                                    {% for error in form.name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
                             {% endif %}
-                          </div>
+                        </div>
                         <div class="mb-3 form-check">
-                          {{ form.public }}
-                          <label for="{{ form.public.id_for_label }}" class="form-check-label">
-                            {{ form.public.label }}
-                          </label>
+                            {{ form.public }}
+                            <label for="{{ form.public.id_for_label }}" class="form-check-label">
+                                {{ form.public.label }}
+                            </label>
                         </div>
 
                         <div class="mb-3">
-                          <label for="{{ form.lang.id_for_label }}" class="form-label">{{ form.lang.label }}</label>
-                          {{ form.lang }}
-                          {% if form.lang.errors %}
-                          <div class="alert alert-danger mt-1" role="alert">
-                            {% for error in form.lang.errors %}
-                              {{ error }}
-                            {% endfor %}
-                          </div>
-                          {% endif %}
-                        </div>
-                      </div>
-
-                      <!-- Правая колонка: селект тегов -->
-                      <div class="col-md-3">
-                          {# test block  TAG  Start #}
-                          <label for="{{ form.tags.id_for_label }}" class="form-label">{{ form.tags.label }}</label>
-                          {{ form.tags }}
-                          {% if form.tags.errors %}
-                          <div class="alert alert-danger mt-1" role="alert">
-                            {% for error in form.tags.errors %}
-                              {{ error }}
-                            {% endfor %}
-                          </div>
-                          {% endif %}
-                          {# test block  TAG  Finish #}
-                      </div>
-                    </div>
-                          <div class="mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}:</label>
-                            {{ form.description }}
-                            {% if form.description.errors %}
-                            <div class="alert alert-danger mt-1" role="alert">
-                              {% for error in form.description.errors %}
-                                {{ error }}
-                              {% endfor %}
-                            </div>
+                            <label for="{{ form.lang.id_for_label }}" class="form-label">{{ form.lang.label }}</label>
+                            {{ form.lang }}
+                            {% if form.lang.errors %}
+                                <div class="alert alert-danger mt-1" role="alert">
+                                    {% for error in form.lang.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
                             {% endif %}
-                          </div>
-                  <div class="mb-3">
+                        </div>
+                    </div>
+
+                    <!-- Правая колонка: селект тегов -->
+                    <div class="col-md-3">
+                        {# test block  TAG  Start #}
+                        <label for="{{ form.tags.id_for_label }}" class="form-label">{{ form.tags.label }}</label>
+                        {{ form.tags }}
+                        {% if form.tags.errors %}
+                            <div class="alert alert-danger mt-1" role="alert">
+                                {% for error in form.tags.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {# test block  TAG  Finish #}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}"
+                           class="form-label">{{ form.description.label }}:</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="alert alert-danger mt-1" role="alert">
+                            {% for error in form.description.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
                     <label for="{{ form.code.id_for_label }}" class="form-label">{{ form.code.label }}:</label>
                     {{ form.code }}
                     {% if form.code.errors %}
-                    <div class="alert alert-danger mt-1" role="alert">
-                      {% for error in form.code.errors %}
-                        {{ error }}
-                      {% endfor %}
-                    </div>
+                        <div class="alert alert-danger mt-1" role="alert">
+                            {% for error in form.code.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
                     {% endif %}
-                      <div id="charCount" >0/5000</div>
-                  </div>
-{#                   <input type="submit" class="btn" value="Сохранить">#}
-{#                </form>#}
+                    <div id="charCount">0/5000</div>
+                </div>
                 <input type="submit" class="btn btn-primary btn-block" value="Сохранить">
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
 {% block script %}
     {{ block.super }}
     <script src="{% static 'js/forms.js' %}"></script>
+    <script src="{% static 'js/localStorageSnippetAdd.js' %}"></script>
 {% endblock %}
 
