@@ -5,6 +5,7 @@ const form = document.getElementById("addForm") || document.getElementById("edit
 // Поля формы
 const nameField = document.getElementById("id_name");
 const publicCheck = document.getElementById("id_public");
+const langSelector =document.querySelector('select[name="lang"]')
 const descriptionField = document.getElementById("id_description");
 const codeField = document.getElementById("id_code");
 
@@ -23,32 +24,35 @@ recoveryButton.classList.add("btn", "btn-warning", "mt-2");  //secondary warning
 // form.appendChild(recoveryButton);
 
 let debounceTimer;
+const draftKey = "snippetDraft_" + window.location.pathname;
 
 // 🔹 Функция сохранения черновика
 function saveDraft() {
     const draft = {
         name: nameField.value,
         publicCheck: publicCheck.checked,
+        lang : langSelector.value,
         descriptionText: descriptionField.value,
         code: codeField.value,
     };
-    localStorage.setItem("snippetDraft", JSON.stringify(draft));
+    localStorage.setItem("draftKey", JSON.stringify(draft));
     console.log("✅ Черновик сохранен");
 }
 
 // 🔹 Функция автосохранения (с debounce)
 function startAutosave() {
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(saveDraft, 2000); // ждём 2 секунды после остановки ввода
+    debounceTimer = setTimeout(saveDraft, 3000); // ждём 3 секунды после остановки ввода
 }
 
 // 🔹 Восстановление черновика
 function loadDraft() {
-    const draft = localStorage.getItem("snippetDraft");
+    const draft = localStorage.getItem("draftKey");
     if (draft) {
         const draftData = JSON.parse(draft);
         nameField.value = draftData.name || "";
         publicCheck.checked = draftData.publicCheck || false;
+        langSelector.value = draftData.lang || "";
         descriptionField.value = draftData.descriptionText || "";
         codeField.value = draftData.code || "";
         hideButtons();
@@ -69,7 +73,7 @@ function clearDraft() {
 }
 
 // --- События ---
-[nameField, publicCheck, descriptionField, codeField].forEach(el => {
+[nameField, publicCheck, langSelector, descriptionField, codeField].forEach(el => {
     el.addEventListener("input", startAutosave);
     el.addEventListener("change", startAutosave);
 });

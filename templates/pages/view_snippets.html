@@ -141,7 +141,7 @@
                                 {% endfor %}
                                 {% if  request.user == snippet.user %}
                                 <a href="{% url 'snippet-edit' snippet.id %}"><i class="fa-solid fa-pen"></i></a>
-                                <a href="{% url 'snippet-delete' snippet.id %}"><i style="color: #564242" class="fa-solid fa-trash"></i></a>
+                                <a href="{% url 'snippet-delete' snippet.id %}" onclick="return confirm('Ты готов удалить?');"><i style="color: #564242" class="fa-solid fa-trash"></i></a>
                                 {% endif %}
                             </td>
                             <td class="col-1">{{ snippet.lang }}</td>

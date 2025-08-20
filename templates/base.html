@@ -29,6 +29,7 @@
                 padding-right: 15px;
                 padding-left: 15px;
             }
+
             .alerts-fixed-container {
                 position: fixed; /* Фиксирует контейнер относительно окна просмотра */
                 top: 20px; /* Отступ сверху */
@@ -45,11 +46,30 @@
                 pointer-events: auto; /* Возвращает кликабельность для самих алертов */
                 margin-bottom: 15px; /* Отступ между сообщениями */
             }
-            .alerts-fixed-container .alert .alert-error{
+
+            .alerts-fixed-container .alert .alert-error {
                 pointer-events: auto; /* Возвращает кликабельность для самих алертов */
                 margin-bottom: 15px; /* Отступ между сообщениями */
             }
 
+            /* Стили для метки "new" */
+            .badge.bg-danger {
+                animation: pulse 2s infinite;
+                font-size: 0.75rem;
+                padding: 0.35em 0.65em;
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.1);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
         </style>
         {% block css %}
         {% endblock %}
@@ -65,7 +85,8 @@
     <div class="alerts-fixed-container" id="alertsFixedContainer">
         {% for message in messages %}
 
-            <div class="alert alert-{{ message.tags | messages_type_mapping}} alert-dismissible fade show" role="alert">
+            <div class="alert alert-{{ message.tags | messages_type_mapping }} alert-dismissible fade show"
+                 role="alert">
                 {{ message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
             </div>
@@ -81,7 +102,9 @@
             integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
             crossorigin="anonymous"></script>
     <script src="{% static 'js/messages.js' %}"></script>
-
+    {% if request.user.is_authenticated %}
+        <script src="{% static 'js/longPolling.js' %}"></script>
+    {% endif %}
 {% endblock %}
 <!-- Optional JavaScript -->
 

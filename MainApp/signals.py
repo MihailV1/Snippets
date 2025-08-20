@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from MainApp.models import Snippet, Comment
+from MainApp.models import Snippet, Comment, Notification
 from django.dispatch import Signal
 from django.db.models import F
 
@@ -30,3 +30,15 @@ def snippet_views_count(sender, snippet, **kwargs):
     snippet.views_count = F('views_count') + 1
     snippet.save(update_fields=['views_count'])
     snippet.refresh_from_db()
+
+
+@receiver(post_save, sender=Comment)
+def create_comment_notification(sender, instance, created, **kwargs):
+    if created and instance.snippet.user and instance.author != instance.snippet.user:
+        Notification.objects.create(
+            recipient=instance.snippet.user,   # кому уведомление
+            snippet=instance.snippet,
+            notification_type='comment',      # тип уведомления
+            title=f"Новый комментарий к «{instance.snippet.name}»",
+            message=f"{instance.author.username} написал: {instance.text}" # [:50]
+        )

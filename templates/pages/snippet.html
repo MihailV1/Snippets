@@ -67,9 +67,10 @@
                     </div>
                 </div>
                 <div class="col-1">
-                    <a class="copy-button d-flex justify-content-end" onclick="copyFromInput()" id="codeCopy">
-                        Copy
-                    </a>
+                    <div class="copy-button d-flex justify-content-end" onclick="copyToBuffer(`{{ snippet.code }}`)"> Copy</div>
+{#                    <a class="copy-button d-flex justify-content-end" onclick="copyFromInput()" id="codeCopy">#}
+{#                        Copy#}
+{#                    </a>#}
                 </div>
             </div>
         </fieldset>
