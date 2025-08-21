@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.contrib.auth.models import User
 from MainApp.models import *
@@ -53,7 +55,23 @@ class Notification(models.Model):
     def __str__(self):
         return f"Уведомление для {self.recipient.username}: {self.title}"
 
+class LikeDislike(models.Model):
+    LIKE = 1
+    DISLIKE = -1
+    VOTES = (
+        (LIKE, 'Like'),
+        (DISLIKE, 'Dislike'),
+    )
 
+    vote = models.SmallIntegerField(choices=VOTES)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        unique_together = ['user', 'content_type', 'object_id']
 
 class Snippet(models.Model):
     class Meta:
@@ -74,21 +92,54 @@ class Snippet(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE,
                       blank=True, null=True)
     tags = models.ManyToManyField(to='Tag', blank=True, related_name='snippets')
+    likes = GenericRelation(LikeDislike)
 
     def __repr__(self):
         return f"S: {self.name}|{self.lang} views:{self.views_count} public:{self.public} user:{self.user}"
+
+    def likes_count(self):
+        self.likes.filter(vote=LikeDislike.LIKE).count()
+
+    def deslikes_count(self):
+        self.likes.filter(vote=LikeDislike.DISLIKE).count()
 
 class Comment(models.Model):
    text = models.TextField()
    creation_date = models.DateTimeField(auto_now_add=True)
    author = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True)
    snippet = models.ForeignKey(to=Snippet, on_delete=models.CASCADE, related_name='comments')
+   likes = GenericRelation(LikeDislike)
 
    def __repr__(self):
        return f"C: {self.text[:10]} author:{self.author} sn: {self.snippet.name}"
+
+   def likes_count(self):
+       self.likes.filter(vote=LikeDislike.LIKE).count()
+   def dislikes_count(self):
+       self.likes.filter(vote=LikeDislike.DISLIKE).count()
 
 
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True)
     def __str__(self):
         return self.name
+
+
+# class LikeDislike(models.Model):
+#    LIKE = 1
+#    DISLIKE = -1
+#    VOTES = (
+#        (LIKE, 'Like'),
+#        (DISLIKE, 'Dislike'),
+#    )
+#    vote = models.SmallIntegerField(choices=VOTES)
+#    user = models.ForeignKey(User, on_delete=models.CASCADE)
+#
+#    comment = models.ForeignKey(
+#        Comment, on_delete=models.CASCADE, related_name='likes_dislikes'
+#    )
+#
+#    class Meta:
+#        # Уникальность связки: пользователь -> комментарий
+#        unique_together = ('user', 'comment')
+

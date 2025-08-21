@@ -19,10 +19,17 @@ urlpatterns = [
     path('comment/add', views.comment_add, name="comment_add"),
     path('stats/', views.stats_snippets, name="stats_snippets"),
     path('notifications/', views.user_notifications, name="notifications"),
+    path('notifications/<int:id>/delete', views.notification_delete, name="notification-delete"),
     path('admin/', admin.site.urls),
     path('api/notifications/unread-count/', views.unread_notifications_count, name='unread_notifications_count'),
+    # path('api/comment/<int:id>/<str:str>', views.like_dislike, name='like_dislike'),
+    path('api/comment/vote/', views.comment_like_dislike, name='comment_like_dislike'),
+
 ]
 # snippets/list
 # snippets/list?sort=name
 # snippets/list?sort=lang
 # snippets/list?sort=create_date
+
+# api/comment/3/like
+# api/comment/3/dislike

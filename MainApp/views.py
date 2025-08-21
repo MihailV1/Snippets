@@ -1,11 +1,12 @@
 from datetime import datetime
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse, HttpResponseForbidden, JsonResponse  # , Http403, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import auth  # Импортируем модуль auth
 from django.db.models import F, Q, Count, Avg
-from MainApp.models import Snippet, Comment, LANG_CHOICES, Notification
+from MainApp.models import Snippet, Comment, LANG_CHOICES, Notification, LikeDislike
 from MainApp.forms import SnippetForm, UserRegistrationForm, CommentForm
 from MainApp.models import LANG_ICON, Tag
 from django.contrib.auth.decorators import login_required
@@ -383,7 +384,7 @@ def user_notifications(request):
     """Страница с уведомлениями пользователя"""
 
     # Получаем все уведомления для авторизованного пользователя, сортируем по дате создания
-    notifications =list(Notification.objects.filter(recipient=request.user))
+    notifications = list(Notification.objects.filter(recipient=request.user))
     # сколько комментариев
     # count_comment = notifications.filter(is_read=0).count()
     # Отмечаем все уведомления как прочитанные при переходе на страницу
@@ -448,3 +449,57 @@ def unread_notifications_count(request):
         'unread_count': 0,
         'timestamp': str(datetime.now())
     })
+
+
+@login_required
+def notification_delete(request, id):
+    notification = get_object_or_404(Notification, id=id)
+    # notif = Notification.objects.filter(recipient=request.id)
+    # if snippet.user != request.user:
+    #     logger.warning("Пользователь '%s' НЕ ИМЕЕТ право удалить этот сниппет (id=%d)", snippet.user, snippet.id)
+    #     context = {'pagename': 'Э! Какой умный!'}
+    #     return render(request, 'pages/index.html', context)
+    # logger.info("уведомления '%s' успешно удалил request.user (id=%d)", snippet.user, request.user)
+    # messages.info(request, f'Пользователь {snippet.user} успешно удалил сниппет (id={snippet.id})')
+    notification.delete()
+    return redirect('notifications')
+
+
+@login_required
+def comment_like_dislike(request):
+    if request.method == "POST":
+        try:
+            import json
+            data = json.loads(request.body)
+            comment_id = data.get("comment_id")
+            vote = data.get("vote")
+
+            comment = Comment.objects.get(id=comment_id)
+
+            # Проверяем, голосовал ли пользователь
+            existing_vote, created = LikeDislike.objects.get_or_create(
+                user=request.user,
+                content_type=ContentType.objects.get_for_model(Comment),
+                object_id=comment.id,
+                defaults={'vote': vote}
+            )
+
+            if not created:
+                # Если уже голосовал, обновляем голос
+                if existing_vote.vote != vote:
+                    existing_vote.vote = vote
+                    existing_vote.save()
+                else:
+                    # Если нажал повторно тот же голос → можно удалить
+                    existing_vote.delete()
+
+            return JsonResponse({"success": True,
+                                 "likes": comment.likes_count,
+                                 "dislikes": comment.dislikes_count})
+
+        except Comment.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Комментарий не найден"})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)})
+
+    return JsonResponse({"success": False, "message": "Метод не разрешен"})
