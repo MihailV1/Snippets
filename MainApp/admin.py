@@ -3,7 +3,7 @@ from django.db.models.aggregates import Count
 
 # from django.db.models import Count
 
-from .models import Snippet, Comment, Tag
+from .models import Snippet, Comment, Tag, Notification, LikeDislike
 
 
 class SnippetAdmin(admin.ModelAdmin):
@@ -35,11 +35,22 @@ class TagAdmin(admin.ModelAdmin):
     def __str__(self):
         return f"Tag:{self.name}"
 
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('recipient', 'notification_type', 'title', 'is_read', 'created_at', 'snippet')
+    list_filter = ('notification_type', 'is_read', 'created_at')
+    search_fields = ('title', 'message', 'recipient__username')
+
+    # Чтобы в админке удобно видеть статус
+    list_editable = ('is_read',)
+
+    # Только для чтения временные поля
+    readonly_fields = ('created_at',)
 
 # Register your models here.
 admin.site.register(Snippet, SnippetAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Comment)
+admin.site.register(Notification, NotificationAdmin)
 
 
 # Изменение заголовка админ-панели

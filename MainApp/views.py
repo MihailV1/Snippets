@@ -389,6 +389,7 @@ def user_notifications(request):
     # count_comment = notifications.filter(is_read=0).count()
     # Отмечаем все уведомления как прочитанные при переходе на страницу
     Notification.objects.filter(recipient=request.user).update(is_read=True)
+
     context = {
         'pagename': 'Мои уведомления',
         'notifications': notifications,
@@ -483,7 +484,6 @@ def comment_like_dislike(request):
                 object_id=comment.id,
                 defaults={'vote': vote}
             )
-
             if not created:
                 # Если уже голосовал, обновляем голос
                 if existing_vote.vote != vote:
@@ -492,11 +492,45 @@ def comment_like_dislike(request):
                 else:
                     # Если нажал повторно тот же голос → можно удалить
                     existing_vote.delete()
-
             return JsonResponse({"success": True,
                                  "likes": comment.likes_count,
                                  "dislikes": comment.dislikes_count})
+        except Comment.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Комментарий не найден"})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)})
 
+    return JsonResponse({"success": False, "message": "Метод не разрешен"})
+
+@login_required
+def snippet_like_dislike(request):
+    if request.method == "POST":
+        try:
+            import json
+            data = json.loads(request.body)
+            snippet_id = data.get("snippet_id")
+            vote = data.get("vote")
+
+            snippet = Snippet.objects.get(id=snippet_id)
+
+            # Проверяем, голосовал ли пользователь
+            existing_vote, created = LikeDislike.objects.get_or_create(
+                user=request.user,
+                content_type=ContentType.objects.get_for_model(Snippet),
+                object_id=snippet.id,
+                defaults={'vote': vote}
+            )
+            if not created:
+                # Если уже голосовал, обновляем голос
+                if existing_vote.vote != vote:
+                    existing_vote.vote = vote
+                    existing_vote.save()
+                else:
+                    # Если нажал повторно тот же голос → можно удалить
+                    existing_vote.delete()
+            return JsonResponse({"success": True,
+                                 "likes": snippet.likes_count,
+                                 "dislikes": snippet.dislikes_count})
         except Comment.DoesNotExist:
             return JsonResponse({"success": False, "message": "Комментарий не найден"})
         except Exception as e:

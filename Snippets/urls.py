@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/notifications/unread-count/', views.unread_notifications_count, name='unread_notifications_count'),
     # path('api/comment/<int:id>/<str:str>', views.like_dislike, name='like_dislike'),
     path('api/comment/vote/', views.comment_like_dislike, name='comment_like_dislike'),
+    path('api/snippet/vote/', views.snippet_like_dislike, name='snippet_like_dislike'),
 
 ]
 # snippets/list

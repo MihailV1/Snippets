@@ -36,8 +36,7 @@
                                         <a href="{% url 'notification-delete' notification.id %}" onclick="return confirm('Ты готов удалить?');"><i style="color: #564242" class="fa-solid fa-trash"></i></a>
 {#                                        <a href="{% url 'snippet-delete' snippet.id %}" onclick="return confirm('Ты готов удалить?');"><i style="color: #564242" class="fa-solid fa-trash"></i></a>#}
                                         </p>
-                                        <a href="/snippet/9"
-                                           class="btn btn-sm btn-outline-primary">
+                                        <a href="{% url 'snippet-id' notification.snippet_id %}">
                                             Перейти к сниппету
                                         </a>
                                     </div>
