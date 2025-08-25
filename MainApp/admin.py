@@ -3,7 +3,7 @@ from django.db.models.aggregates import Count
 
 # from django.db.models import Count
 
-from .models import Snippet, Comment, Tag, Notification, LikeDislike
+from .models import Snippet, Comment, Tag, Notification, LikeDislike, UserProfile
 
 
 class SnippetAdmin(admin.ModelAdmin):
@@ -61,3 +61,5 @@ admin.site.site_title = "Snippets Admin Portal"
 
 # Изменение заголовка индексной страницы админ-панели
 admin.site.index_title = "Welcome to Snippets Admin Portal"
+
+admin.site.register(UserProfile)

@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import auth  # Импортируем модуль auth
 from django.db.models import F, Q, Count, Avg
 from MainApp.models import Snippet, Comment, LANG_CHOICES, Notification, LikeDislike
-from MainApp.forms import SnippetForm, UserRegistrationForm, CommentForm
+from MainApp.forms import SnippetForm, UserRegistrationForm, CommentForm, UserProfileForm, UserEditForm
 from MainApp.models import LANG_ICON, Tag
 from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.forms import UserCreationForm
@@ -537,3 +537,33 @@ def snippet_like_dislike(request):
             return JsonResponse({"success": False, "message": str(e)})
 
     return JsonResponse({"success": False, "message": "Метод не разрешен"})
+
+@login_required
+def user_profile(request):
+    context = {
+        'pagename': 'Мой профиль',
+    }
+    return render(request, 'pages/user_profile.html', context)
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        user_form = UserEditForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=request.user.profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Профиль успешно обновлен!')
+            return redirect('user_profile')
+    if request.method == 'GET':
+        user_form = UserEditForm(instance=request.user)
+        profile_form = UserProfileForm(instance=request.user.profile)
+
+    context = {
+        'pagename': 'Редактирование профиля',
+        'user_form': user_form,
+        'profile_form': profile_form,
+    }
+
+    return render(request, 'pages/user_profile_edite.html', context)

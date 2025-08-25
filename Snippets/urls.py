@@ -25,8 +25,13 @@ urlpatterns = [
     # path('api/comment/<int:id>/<str:str>', views.like_dislike, name='like_dislike'),
     path('api/comment/vote/', views.comment_like_dislike, name='comment_like_dislike'),
     path('api/snippet/vote/', views.snippet_like_dislike, name='snippet_like_dislike'),
-
+    path('profile/', views.user_profile, name="user_profile"),
+    path('profile/edit', views.edit_profile, name="user_profile_edit"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 # snippets/list
 # snippets/list?sort=name
 # snippets/list?sort=lang

@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from MainApp.models import Snippet, Comment, Notification
+from MainApp.models import Snippet, Comment, Notification, UserProfile
 from django.dispatch import Signal
 from django.db.models import F
 
@@ -42,3 +42,8 @@ def create_comment_notification(sender, instance, created, **kwargs):
             title=f"Новый комментарий к «{instance.snippet.name}»",
             message=f"{instance.author.username} написал: {instance.text}" # [:50]
         )
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+   if created:
+       UserProfile.objects.create(user=instance)

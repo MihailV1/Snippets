@@ -46,12 +46,32 @@
                     {#                    <ul class="nav-item">#}
                     {% if request.user.is_authenticated %}
                         <div class="d-flex align-items-center gap-2">
-                            <div style="color: floralwhite">Hello, {{ request.user.username }}</div>
+                            <li class="nav-item dropdown ms-2">
+                                <a class="btn btn-outline-light dropdown-toggle" href="#" id="userDropdown"
+                                   role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user"></i> {{ request.user.username }}
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" style="min-width: 200px;">
+                                    <a class="dropdown-item" href="{% url 'user_profile' %}">
+                                        <i class="fas fa-user-circle"></i> Мой профиль
+                                    </a>
+                                    <a class="dropdown-item" href="{% url 'user_profile_edit' %}">
+                                        <i class="fas fa-edit"></i> Редактировать профиль
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="fas fa-sign-out-alt"></i> Выйти
+                                    </a>
+                                </div>
+                            </li>
+{#                            <div style="color: floralwhite">Hello, {{ request.user.username }}</div>#}
                             <a class="btn btn-outline-primary" href="{% url 'logout' %}">Выйти</a>
                         </div>
                     {% else %}
                         <form method="post" action="{% url 'login' %}">
                             {% csrf_token %}
+
                             <li class="nav-item dropdown">
                                 <a class="btn btn-outline-primary dropdown-toggle" href="#" id="navbarDropdown"
                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">

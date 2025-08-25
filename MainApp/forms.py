@@ -1,5 +1,5 @@
 from django import forms
-from MainApp.models import LANG_CHOICES, PUBLIC_CHOICES
+from MainApp.models import LANG_CHOICES, PUBLIC_CHOICES, UserProfile
 from django.contrib.auth.models import User
 from MainApp.models import Snippet, Comment, Tag
 
@@ -116,3 +116,23 @@ class CommentForm(forms.ModelForm):
                'required': True,  # это HTML-атрибут, не Python-валидация
            })
    }
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['avatar', 'bio', 'website']
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+            'website': forms.URLInput(attrs={'class': 'form-control'}),
+        }
+
+
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }

@@ -134,20 +134,19 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
-# class LikeDislike(models.Model):
-#    LIKE = 1
-#    DISLIKE = -1
-#    VOTES = (
-#        (LIKE, 'Like'),
-#        (DISLIKE, 'Dislike'),
-#    )
-#    vote = models.SmallIntegerField(choices=VOTES)
-#    user = models.ForeignKey(User, on_delete=models.CASCADE)
-#
-#    comment = models.ForeignKey(
-#        Comment, on_delete=models.CASCADE, related_name='likes_dislikes'
-#    )
-#
-#    class Meta:
-#        # Уникальность связки: пользователь -> комментарий
-#        unique_together = ('user', 'comment')
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    bio = models.TextField(max_length=500, blank=True)
+    website = models.URLField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def get_avatar_url(self):
+        if self.avatar:
+            return self.avatar.url
+        return '/static/images/default-avatar.png'
+
+    def __str__(self):
+        return f"Профиль для {self.user.username}"
