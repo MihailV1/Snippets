@@ -60,13 +60,13 @@
                                         <i class="fas fa-edit"></i> Редактировать профиль
                                     </a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#">
+                                    <a class="dropdown-item" href="{% url 'logout' %}">
                                         <i class="fas fa-sign-out-alt"></i> Выйти
                                     </a>
                                 </div>
                             </li>
 {#                            <div style="color: floralwhite">Hello, {{ request.user.username }}</div>#}
-                            <a class="btn btn-outline-primary" href="{% url 'logout' %}">Выйти</a>
+{#                            <a class="btn btn-outline-primary" href="{% url 'logout' %}">Выйти</a>#}
                         </div>
                     {% else %}
                         <form method="post" action="{% url 'login' %}">

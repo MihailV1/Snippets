@@ -5,422 +5,424 @@
     <link rel="stylesheet" href="{% static 'css/userProfile.css' %}">
 {% endblock %}
 {% block content %}
-<!-- Begin page content -->
-{#<main role="main" class="mt-3 flex-shrink-0">#}
- <div id="isAuth" hidden="hidden">True</div>
- <div class="alerts-fixed-container" id="alertsFixedContainer">
-
- </div>
-
- <div class="container">
-     <div class="row">
-         <div class="col">
-             <div class="profile-header">
-                 <div class="row align-items-center">
-                     <div class="col-md-3 text-center">
-                         <div class="profile-avatar">
-                             <img alt="Аватар" class="avatar-image"
-                                  src="{{ request.user.profile.get_avatar_url }}">
-                         </div>
-                     </div>
-                     <div class="col-md-6">
-                         <h1>@{{ request.user.username }}</h1>
-                         <p class="mb-2">Дата регистрации: {{ request.user.date_joined }}</p>
-                     </div>
-                     <div class="col-md-3">
-
-                         <a href="/profile/edit/" class="btn btn-outline-primary edit-profile-btn">
-                             <i class="fas fa-edit"></i> Редактировать
-                         </a>
-
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </div>
-
-     <ul class="nav nav-tabs" id="profileTabs" role="tablist">
-         <li class="nav-item" role="presentation">
-             <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button"
-                     role="tab">
-                 <i class="fas fa-user"></i> Информация
-             </button>
-         </li>
-         <li class="nav-item" role="presentation">
-             <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button"
-                     role="tab">
-                 <i class="fas fa-chart-bar"></i> Статистика
-             </button>
-         </li>
-         <li class="nav-item" role="presentation">
-             <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
-                     role="tab">
-                 <i class="fas fa-history"></i> История
-             </button>
-         </li>
-     </ul>
-
-     <div class="tab-content" id="profileTabContent">
-         <!-- Вкладка Информация -->
-         <div class="tab-pane fade show active" id="info" role="tabpanel">
-             <div class="row">
-                 <div class="col-md-6">
-                     <h4>Основная информация</h4>
-                     <table class="table">
-                         <tr>
-                             <td><strong>Имя пользователя:</strong></td>
-                             <td>{{ request.user.username | default:"Не указано"}}</td>
-                         </tr>
-                         <tr>
-                             <td><strong>Имя:</strong></td>
-                             <td>{{ request.user.first_name | default:"Не указано"}}</td>
-                         </tr>
-                         <tr>
-                             <td><strong>Фамилия:</strong></td>
-                             <td>{{ request.user.last_name | default:"Не указано"}}</td>
-                         </tr>
-                         <tr>
-                             <td><strong>Email:</strong></td>
-                             <td>{{ request.user.email | default:"Не указано"}}</td>
-                         </tr>
-                         <tr>
-                             <td><strong>Дата регистрации:</strong></td>
-                             <td>{{ request.user.date_joined }}</td>
-                         </tr>
-                         <tr>
-                             <td><strong>Последний вход:</strong></td>
-                             <td>{{ request.user.last_login }}</td>
-                         </tr>
-                     </table>
-                 </div>
-                 <div class="col-md-6">
-                     <h4>Дополнительная информация</h4>
-
-                     <p><strong>О себе:</strong><br>{{ request.user.profile.bio }}</p>
-
-
-                     <p><strong>Веб-сайт:</strong><br>
-                         <a href="" target="_blank">{{ request.user.profile.website }}</a>
-                     </p>
-
-
-                     <p><strong>Смена пароля:</strong><br>
-                         <a href="/password/change/" class="btn btn-warning btn-sm">
-                             <i class="fas fa-key"></i> Изменить пароль
-                         </a>
-                     </p>
-
-                 </div>
-             </div>
-         </div>
-
-         <!-- Вкладка Статистика -->
-         <div class="tab-pane fade" id="stats" role="tabpanel">
-             <div class="row">
-                 <div class="col-md-6">
-                     <h4>Общая статистика</h4>
-                     <div class="card">
-                         <div class="card-body">
-                             <div class="row text-center">
-                                 <div class="col-6">
-                                     <h3 class="text-primary">17</h3>
-                                     <p>Всего сниппетов</p>
-                                 </div>
-                                 <div class="col-6">
-                                     <h3 class="text-success">45.4</h3>
-                                     <p>Сред. просмотров</p>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="col-md-6">
-                     <h4>Топ сниппетов по просмотрам</h4>
-
-
-                     <div class="snippet-card">
-                         <h6><a href="/snippet/1">Python: Hello World</a></h6>
-                         <p class="mb-1">
-                             <span class="badge bg-primary">python</span>
-                             <span class="text-muted">30.06.2025</span>
-                         </p>
-                         <p class="mb-0">
-                             <i class="fas fa-eye"></i> 140 просмотров
-                         </p>
-                     </div>
-
-                     <div class="snippet-card">
-                         <h6><a href="/snippet/4">Python: File Reading</a></h6>
-                         <p class="mb-1">
-                             <span class="badge bg-primary">python</span>
-                             <span class="text-muted">30.06.2025</span>
-                         </p>
-                         <p class="mb-0">
-                             <i class="fas fa-eye"></i> 101 просмотров
-                         </p>
-                     </div>
-
-                     <div class="snippet-card">
-                         <h6><a href="/snippet/9">Python: Decorator Example</a></h6>
-                         <p class="mb-1">
-                             <span class="badge bg-primary">python</span>
-                             <span class="text-muted">30.06.2025</span>
-                         </p>
-                         <p class="mb-0">
-                             <i class="fas fa-eye"></i> 93 просмотров
-                         </p>
-                     </div>
-
-                     <div class="snippet-card">
-                         <h6><a href="/snippet/2">Python: List Comprehension</a></h6>
-                         <p class="mb-1">
-                             <span class="badge bg-primary">python</span>
-                             <span class="text-muted">30.06.2025</span>
-                         </p>
-                         <p class="mb-0">
-                             <i class="fas fa-eye"></i> 81 просмотров
-                         </p>
-                     </div>
-
-                     <div class="snippet-card">
-                         <h6><a href="/snippet/5">Python: Function with Args</a></h6>
-                         <p class="mb-1">
-                             <span class="badge bg-primary">python</span>
-                             <span class="text-muted">30.06.2025</span>
-                         </p>
-                         <p class="mb-0">
-                             <i class="fas fa-eye"></i> 75 просмотров
-                         </p>
-                     </div>
-
-
-                 </div>
-             </div>
-         </div>
-
-         <!-- Вкладка История -->
-         <div class="tab-pane fade" id="history" role="tabpanel">
-             <h4>История действий</h4>
-
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Прокомментировал сниппет &quot;C++: Function Example&quot;</p>
-                         <small class="action-date">08.08.2025 09:35</small>
-                     </div>
-
-                     <span class="badge bg-info">Комментарий</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Прокомментировал сниппет &quot;C++: Console Output&quot;</p>
-                         <small class="action-date">08.08.2025 08:09</small>
-                     </div>
-
-                     <span class="badge bg-info">Комментарий</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Прокомментировал сниппет &quot;C++: Basic Loop&quot;</p>
-                         <small class="action-date">08.08.2025 08:09</small>
-                     </div>
-
-                     <span class="badge bg-info">Комментарий</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Создал сниппет &quot;demo snippet&quot;</p>
-                         <small class="action-date">10.07.2025 16:45</small>
-                     </div>
-
-                     <span class="badge bg-success">Сниппет</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Создал сниппет &quot;Тестовое название&quot;</p>
-                         <small class="action-date">10.07.2025 16:44</small>
-                     </div>
-
-                     <span class="badge bg-success">Сниппет</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Создал сниппет &quot;Test snippet&quot;</p>
-                         <small class="action-date">10.07.2025 16:32</small>
-                     </div>
-
-                     <span class="badge bg-success">Сниппет</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Прокомментировал сниппет &quot;Python: Decorator Example&quot;</p>
-                         <small class="action-date">01.07.2025 10:30</small>
-                     </div>
-
-                     <span class="badge bg-info">Комментарий</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Прокомментировал сниппет &quot;Python: Exception Handling&quot;</p>
-                         <small class="action-date">01.07.2025 10:05</small>
-                     </div>
-
-                     <span class="badge bg-info">Комментарий</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Прокомментировал сниппет &quot;Python: Function with Args&quot;</p>
-                         <small class="action-date">01.07.2025 09:45</small>
-                     </div>
-
-                     <span class="badge bg-info">Комментарий</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Прокомментировал сниппет &quot;Python: List Comprehension&quot;</p>
-                         <small class="action-date">01.07.2025 09:15</small>
-                     </div>
-
-                     <span class="badge bg-info">Комментарий</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Прокомментировал сниппет &quot;Python: Hello World&quot;</p>
-                         <small class="action-date">01.07.2025 09:00</small>
-                     </div>
-
-                     <span class="badge bg-info">Комментарий</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Создал сниппет &quot;Python: Testing Utility&quot;</p>
-                         <small class="action-date">30.06.2025 11:10</small>
-                     </div>
-
-                     <span class="badge bg-success">Сниппет</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Создал сниппет &quot;Python: Configuration Settings&quot;</p>
-                         <small class="action-date">30.06.2025 11:05</small>
-                     </div>
-
-                     <span class="badge bg-success">Сниппет</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Создал сниппет &quot;Python: Internal Data Processing&quot;</p>
-                         <small class="action-date">30.06.2025 11:00</small>
-                     </div>
-
-                     <span class="badge bg-success">Сниппет</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Создал сниппет &quot;Python: Secret Key Generator&quot;</p>
-                         <small class="action-date">30.06.2025 10:55</small>
-                     </div>
-
-                     <span class="badge bg-success">Сниппет</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Создал сниппет &quot;Python: Private Function&quot;</p>
-                         <small class="action-date">30.06.2025 10:50</small>
-                     </div>
-
-                     <span class="badge bg-success">Сниппет</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Создал сниппет &quot;Python: Regular Expression&quot;</p>
-                         <small class="action-date">30.06.2025 10:45</small>
-                     </div>
-
-                     <span class="badge bg-success">Сниппет</span>
-
-                 </div>
-             </div>
-
-             <div class="action-item">
-                 <div class="d-flex justify-content-between align-items-start">
-                     <div>
-                         <p class="mb-1">Создал сниппет &quot;Python: Decorator Example&quot;</p>
-                         <small class="action-date">30.06.2025 10:40</small>
-                     </div>
-
-                     <span class="badge bg-success">Сниппет</span>
-
-                 </div>
-             </div>
-
-
-         </div>
-     </div>
- </div>
+    <!-- Begin page content -->
+    {#<main role="main" class="mt-3 flex-shrink-0">#}
+    <div id="isAuth" hidden="hidden">True</div>
+    <div class="alerts-fixed-container" id="alertsFixedContainer">
+
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="profile-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <div class="profile-avatar">
+                                <img alt="Аватар" class="avatar-image"
+                                     src="{{ request.user.profile.get_avatar_url }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h1>@{{ request.user.username }}</h1>
+                            <p class="mb-2">Дата регистрации: {{ request.user.date_joined }}</p>
+                        </div>
+                        <div class="col-md-3">
+
+                            <a href="/profile/edit/" class="btn btn-outline-primary edit-profile-btn">
+                                <i class="fas fa-edit"></i> Редактировать
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button"
+                        role="tab">
+                    <i class="fas fa-user"></i> Информация
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button"
+                        role="tab">
+                    <i class="fas fa-chart-bar"></i> Статистика
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                        role="tab">
+                    <i class="fas fa-history"></i> История
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="profileTabContent">
+            <!-- Вкладка Информация -->
+            <div class="tab-pane fade show active" id="info" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Основная информация</h4>
+                        <table class="table">
+                            <tr>
+                                <td><strong>Имя пользователя:</strong></td>
+                                <td>{{ request.user.username | default:"Не указано" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Имя:</strong></td>
+                                <td>{{ request.user.first_name | default:"Не указано" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Фамилия:</strong></td>
+                                <td>{{ request.user.last_name | default:"Не указано" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email:</strong></td>
+                                <td>{{ request.user.email | default:"Не указано" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Дата регистрации:</strong></td>
+                                <td>{{ request.user.date_joined }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Последний вход:</strong></td>
+                                <td>{{ request.user.last_login }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Дополнительная информация</h4>
+
+                        <p><strong>О себе:</strong><br>{{ request.user.profile.bio }}</p>
+
+
+                        <p><strong>Веб-сайт:</strong><br>
+                            <a href="" target="_blank">{{ request.user.profile.website }}</a>
+                        </p>
+
+
+                        <p><strong>Смена пароля:</strong><br>
+                            <a href="/password/change/" class="btn btn-warning btn-sm">
+                                <i class="fas fa-key"></i> Изменить пароль
+                            </a>
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка Статистика -->
+            <div class="tab-pane fade" id="stats" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Общая статистика</h4>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-6">
+                                        <h3 class="text-primary">{{ all_snippets }}</h3>
+                                        <p>Всего сниппетов</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <h3 class="text-success">{{ avg_p_snippets |floatformat:0 }}</h3>
+                                        <p>Сред. просмотров</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Топ сниппетов по просмотрам</h4>
+                        {% for snippet in top5_views_snippets %}
+                            <div class="snippet-card">
+                            {{ snip.title }} — {{ snip.views_count }}
+                                <h6><a href="/snippet/1">Python: Hello World</a></h6>
+                                <p class="mb-1">
+                                    <span class="badge bg-primary">python</span>
+                                    <span class="text-muted">30.06.2025</span>
+                                </p>
+                                <p class="mb-0">
+                                    <i class="fas fa-eye"></i> 140 просмотров
+                                </p>
+                            </div>
+                        {% empty %}
+                            <ul>
+                            <li>У тебя пока нет публичных сниппетов 🙂</li>
+                            </ul>
+                        {% endfor %}
+                        {#                     <div class="snippet-card">#}
+                        {#                         <h6><a href="/snippet/4">Python: File Reading</a></h6>#}
+                        {#                         <p class="mb-1">#}
+                        {#                             <span class="badge bg-primary">python</span>#}
+                        {#                             <span class="text-muted">30.06.2025</span>#}
+                        {#                         </p>#}
+                        {#                         <p class="mb-0">#}
+                        {#                             <i class="fas fa-eye"></i> 101 просмотров#}
+                        {#                         </p>#}
+                        {#                     </div>#}
+                        {##}
+                        {#                     <div class="snippet-card">#}
+                        {#                         <h6><a href="/snippet/9">Python: Decorator Example</a></h6>#}
+                        {#                         <p class="mb-1">#}
+                        {#                             <span class="badge bg-primary">python</span>#}
+                        {#                             <span class="text-muted">30.06.2025</span>#}
+                        {#                         </p>#}
+                        {#                         <p class="mb-0">#}
+                        {#                             <i class="fas fa-eye"></i> 93 просмотров#}
+                        {#                         </p>#}
+                        {#                     </div>#}
+                        {##}
+                        {#                     <div class="snippet-card">#}
+                        {#                         <h6><a href="/snippet/2">Python: List Comprehension</a></h6>#}
+                        {#                         <p class="mb-1">#}
+                        {#                             <span class="badge bg-primary">python</span>#}
+                        {#                             <span class="text-muted">30.06.2025</span>#}
+                        {#                         </p>#}
+                        {#                         <p class="mb-0">#}
+                        {#                             <i class="fas fa-eye"></i> 81 просмотров#}
+                        {#                         </p>#}
+                        {#                     </div>#}
+                        {##}
+                        {#                     <div class="snippet-card">#}
+                        {#                         <h6><a href="/snippet/5">Python: Function with Args</a></h6>#}
+                        {#                         <p class="mb-1">#}
+                        {#                             <span class="badge bg-primary">python</span>#}
+                        {#                             <span class="text-muted">30.06.2025</span>#}
+                        {#                         </p>#}
+                        {#                         <p class="mb-0">#}
+                        {#                             <i class="fas fa-eye"></i> 75 просмотров#}
+                        {#                         </p>#}
+                        {#                     </div>#}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка История -->
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <h4>История действий</h4>
+
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Прокомментировал сниппет &quot;C++: Function Example&quot;</p>
+                            <small class="action-date">08.08.2025 09:35</small>
+                        </div>
+
+                        <span class="badge bg-info">Комментарий</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Прокомментировал сниппет &quot;C++: Console Output&quot;</p>
+                            <small class="action-date">08.08.2025 08:09</small>
+                        </div>
+
+                        <span class="badge bg-info">Комментарий</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Прокомментировал сниппет &quot;C++: Basic Loop&quot;</p>
+                            <small class="action-date">08.08.2025 08:09</small>
+                        </div>
+
+                        <span class="badge bg-info">Комментарий</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Создал сниппет &quot;demo snippet&quot;</p>
+                            <small class="action-date">10.07.2025 16:45</small>
+                        </div>
+
+                        <span class="badge bg-success">Сниппет</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Создал сниппет &quot;Тестовое название&quot;</p>
+                            <small class="action-date">10.07.2025 16:44</small>
+                        </div>
+
+                        <span class="badge bg-success">Сниппет</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Создал сниппет &quot;Test snippet&quot;</p>
+                            <small class="action-date">10.07.2025 16:32</small>
+                        </div>
+
+                        <span class="badge bg-success">Сниппет</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Прокомментировал сниппет &quot;Python: Decorator Example&quot;</p>
+                            <small class="action-date">01.07.2025 10:30</small>
+                        </div>
+
+                        <span class="badge bg-info">Комментарий</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Прокомментировал сниппет &quot;Python: Exception Handling&quot;</p>
+                            <small class="action-date">01.07.2025 10:05</small>
+                        </div>
+
+                        <span class="badge bg-info">Комментарий</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Прокомментировал сниппет &quot;Python: Function with Args&quot;</p>
+                            <small class="action-date">01.07.2025 09:45</small>
+                        </div>
+
+                        <span class="badge bg-info">Комментарий</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Прокомментировал сниппет &quot;Python: List Comprehension&quot;</p>
+                            <small class="action-date">01.07.2025 09:15</small>
+                        </div>
+
+                        <span class="badge bg-info">Комментарий</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Прокомментировал сниппет &quot;Python: Hello World&quot;</p>
+                            <small class="action-date">01.07.2025 09:00</small>
+                        </div>
+
+                        <span class="badge bg-info">Комментарий</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Создал сниппет &quot;Python: Testing Utility&quot;</p>
+                            <small class="action-date">30.06.2025 11:10</small>
+                        </div>
+
+                        <span class="badge bg-success">Сниппет</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Создал сниппет &quot;Python: Configuration Settings&quot;</p>
+                            <small class="action-date">30.06.2025 11:05</small>
+                        </div>
+
+                        <span class="badge bg-success">Сниппет</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Создал сниппет &quot;Python: Internal Data Processing&quot;</p>
+                            <small class="action-date">30.06.2025 11:00</small>
+                        </div>
+
+                        <span class="badge bg-success">Сниппет</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Создал сниппет &quot;Python: Secret Key Generator&quot;</p>
+                            <small class="action-date">30.06.2025 10:55</small>
+                        </div>
+
+                        <span class="badge bg-success">Сниппет</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Создал сниппет &quot;Python: Private Function&quot;</p>
+                            <small class="action-date">30.06.2025 10:50</small>
+                        </div>
+
+                        <span class="badge bg-success">Сниппет</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Создал сниппет &quot;Python: Regular Expression&quot;</p>
+                            <small class="action-date">30.06.2025 10:45</small>
+                        </div>
+
+                        <span class="badge bg-success">Сниппет</span>
+
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1">Создал сниппет &quot;Python: Decorator Example&quot;</p>
+                            <small class="action-date">30.06.2025 10:40</small>
+                        </div>
+
+                        <span class="badge bg-success">Сниппет</span>
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -119,13 +119,13 @@ class Comment(models.Model):
     def __repr__(self):
         return f"C: {self.text[:10]} author:{self.author} sn: {self.snippet.name}"
 
-    @property # можно писать comment.likes_count без скобок
-    def likes_count(self):
-        return self.likes.filter(vote=LikeDislike.LIKE).count()
-
-    @property
-    def dislikes_count(self):
-        return self.likes.filter(vote=LikeDislike.DISLIKE).count()
+    # @property # можно писать comment.likes_count без скобок
+    # def likes_count(self):
+    #     return self.likes.filter(vote=LikeDislike.LIKE).count()
+    #
+    # @property
+    # def dislikes_count(self):
+    #     return self.likes.filter(vote=LikeDislike.DISLIKE).count()
 
 
 class Tag(models.Model):

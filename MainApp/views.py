@@ -15,6 +15,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.contrib import messages
 from MainApp.signals import snippet_view
+from MainApp.utils import send_activation_email  # ⚡ твоя функция отправки письма
 import logging
 
 # Получаем экземпляр логгера
@@ -120,6 +121,7 @@ def snippets_page(request, snippets_my):
             snippet.tags_details = snippet.tags.all()
 
     # paginator
+    snippets = snippets.select_related("user")
     paginator = Paginator(snippets, 10)  # Показывать по 10 сниппетов на странице
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)  # Получаем объект Page для запрошенной страницы
@@ -162,6 +164,15 @@ def snippets_page(request, snippets_my):
 def snippet_detail(request, id):
     # snippet = get_object_or_404(Snippet, id=id)
     snippet = Snippet.objects.prefetch_related('comments').get(id=id)  # .order_by('lang','-creation_date')
+
+    # snippet = (
+    #     Snippet.objects
+    #     .select_related("user")  # подгружаем автора сниппета
+    #     .prefetch_related("comments__author")  # подгружаем авторов комментариев
+    #     .prefetch_related("tags")  # теги (M2M)
+    #     .get(id=id)
+    # )
+
     if snippet.user != request.user and snippet.public is False:
         return HttpResponseForbidden("You are not authorized to see this snippet")
     snippet_view.send(sender=None, snippet=snippet)
@@ -180,6 +191,7 @@ def snippet_detail(request, id):
     if sort is not None:
         # print(f"\n\n\n\nsort: {sort}\n\n\n\n")
         comments = comments.order_by(sort)
+        comments = comments.prefetch_related("author")
     # print(f"------------\n\n\n\ncomments_count = {comments_count}\n\n\n\n-------------")
     comment_form = CommentForm()  # Передаем пустую форму для добавления комментариев
     context = {'pagename': 'Просмотр сниппета',
@@ -304,8 +316,12 @@ def user_registration(request):
             logger.debug("POST запрос на регистрацию пользователя. Данные: %s", post_data.dict())
             user_form = UserRegistrationForm(request.POST)
             if user_form.is_valid():
-                user = user_form.save()
+                user = user_form.save() # ⚡ пользователь создаётся is_active=False в форме
                 logger.info("Пользователь '%s' успешно зарегистрирован (id=%d)", user.username, user.id)
+
+                # Отправляем email с активацией
+                send_activation_email(user, request)
+                
                 messages.success(request, f"User {user.username} pasted successfully!")
                 return redirect("home")
             else:
@@ -540,8 +556,19 @@ def snippet_like_dislike(request):
 
 @login_required
 def user_profile(request):
+    statistics_snippet = Snippet.objects.aggregate(all_snippets=Count('id', filter=Q(user=request.user))
+                                                   , avg_p_snippets=Avg('views_count', filter=Q(public=True, user=request.user))
+                                                   )
+             # aggregate(all_snippets=Count('id')
+                                      # , all_p_snippets=Count('id', filter=Q(public=True))
+                                      # , avg_p_snippets=Avg('views_count', filter=Q(public=True))
+                                      # )
+    top5_views_snippets = Snippet.objects.filter(public=True, user=request.user).order_by('-views_count')[:5]
     context = {
         'pagename': 'Мой профиль',
+        'all_snippets': statistics_snippet['all_snippets'],
+        'avg_p_snippets': statistics_snippet['avg_p_snippets'],
+        'top5_views_snippets': top5_views_snippets,
     }
     return render(request, 'pages/user_profile.html', context)
 
