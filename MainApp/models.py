@@ -51,6 +51,9 @@ class Notification(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['recipient', '-created_at']),
+        ]
 
     def __str__(self):
         return f"Уведомление для {self.recipient.username}: {self.title}"
@@ -107,6 +110,14 @@ class Snippet(models.Model):
     @property
     def dislikes_count(self):
         return self.likes.filter(vote=LikeDislike.DISLIKE).count()
+
+    class Meta:
+        ordering = ['name','lang']
+        indexes = [
+            # models.Index(fields=['public','user']),
+            models.Index(fields=['name','lang']),
+            models.Index(fields=['user','name', 'lang']),
+        ]
 
 
 class Comment(models.Model):

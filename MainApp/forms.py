@@ -3,17 +3,19 @@ from MainApp.models import LANG_CHOICES, PUBLIC_CHOICES, UserProfile
 from django.contrib.auth.models import User
 from MainApp.models import Snippet, Comment, Tag
 
+class SnippetForm(forms.ModelForm):
+    # Теперь ваша форма наследуется от ModelForm
 
-class SnippetForm(forms.Form):
+    # Вы можете переопределить виджеты, если это необходимо
     name = forms.CharField(
-        label="Название сниппета", #
+        label="Название сниппета",
         max_length=100,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Краткое название'}),
     )
 
     lang = forms.ChoiceField(
         label="Язык программирования",
-        choices=LANG_CHOICES,
+        choices=LANG_CHOICES, # Убедитесь, что LANG_CHOICES импортирован
         required=True,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
@@ -35,14 +37,54 @@ class SnippetForm(forms.Form):
     )
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all(),
-        widget=forms.SelectMultiple(attrs={'class': 'form-select', 'size': 8}),  #'class': 'form-control'
+        widget=forms.SelectMultiple(attrs={'class': 'form-select', 'size': 8}),
         label="Теги (можно выбрать несколько)",
         required=False,
     )
 
+    class Meta:
+        model = Snippet
+        fields = ['name', 'lang', 'code', 'description', 'public', 'tags']
+
+# class SnippetForm(forms.Form):
+#     name = forms.CharField(
+#         label="Название сниппета", #
+#         max_length=100,
+#         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Краткое название'}),
+#     )
+#
+#     lang = forms.ChoiceField(
+#         label="Язык программирования",
+#         choices=LANG_CHOICES,
+#         required=True,
+#         widget=forms.Select(attrs={'class': 'form-control'})
+#     )
+#
+#     code = forms.CharField(
+#         label="Исходный код",
+#         max_length=5000,
+#         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 10, 'placeholder': 'Введите ваш код здесь'})
+#     )
+#     description = forms.CharField(
+#         label="Пояснение",
+#         max_length=1000,
+#         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Введите пояснение'})
+#     )
+#     public = forms.BooleanField(
+#         label="Сделать сниппет публичным",
+#         required=False,
+#         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+#     )
+#     tags = forms.ModelMultipleChoiceField(
+#         queryset=Tag.objects.all(),
+#         widget=forms.SelectMultiple(attrs={'class': 'form-select', 'size': 8}),  #'class': 'form-control'
+#         label="Теги (можно выбрать несколько)",
+#         required=False,
+#     )
+
     def clean_name(self):
         name = self.cleaned_data['name']
-        if not 3 <= len(name) <= 20:
+        if not 3 <= len(name) <= 40:
             raise forms.ValidationError("name must be 3 ... 20")
         return name
     # Пример валидации на уровне формы (опционально)

@@ -13,7 +13,9 @@
         <div class="row">
             <div class="col">
                 {% if edit %}
-                    <form id="editForm" action="{% url 'snippet-edit' id %}" method="post">
+{#                    <form id="editForm" action="{% url 'snippet-edit' id %}" method="post">#}
+                    <form id="editForm" action="{% url 'snippet-edit' snippet.id %}" method="post">
+
                 {% else %}
                     <form id="addForm" action="{% url 'snippet-add' %}" method="post">
                 {% endif %}
@@ -112,6 +114,8 @@
 {% block script %}
     {{ block.super }}
     <script src="{% static 'js/forms.js' %}"></script>
+    {% if not edit %}
     <script src="{% static 'js/localStorageSnippetAdd.js' %}"></script>
+    {% endif %}
 {% endblock %}
 

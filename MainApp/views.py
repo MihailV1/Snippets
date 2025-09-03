@@ -15,7 +15,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.contrib import messages
 from MainApp.signals import snippet_view
-from MainApp.utils import send_activation_email  # ⚡ твоя функция отправки письма
+from MainApp.utils import send_activation_email, verify_activation_token  # ⚡ твоя функция отправки письма
 import logging
 
 # Получаем экземпляр логгера
@@ -273,8 +273,16 @@ def login_page(request):
 
         # Попытка аутентификации пользователя
         user = auth.authenticate(request, username=username, password=password)
+        print(f"------------->user={user}")
 
-        if user is not None:
+        if user is not None: # 1
+            # if not user.is_active:
+            #     # пользователь существует, но ещё не подтвердил почту
+            #     context = {
+            #         "errors": ["Ваш аккаунт не активирован! Проверьте почту и перейдите по ссылке для активации."]
+            #     }
+            #     return render(request, "pages/index.html", context)
+
             # Если пользователь аутентифицирован, выполняем вход
             auth.login(request, user)
             next_url = request.GET.get('next') or 'home'
@@ -282,13 +290,27 @@ def login_page(request):
             # # Перенаправляем пользователя на домашнюю страницу:
             # print(f"------------->user={user}")
             # return redirect('home') # 'home' - это имя вашего URL для домашней страницы
-        else:
-            # Если аутентификация не удалась, можно вывести сообщение об ошибке
+        else:# 2/3
+            # 2. Аккаунт не актирован
+            try:
+                user = User.objects.get(username=username)
+                if not user.is_active:
+                    errors = ["Ваш аккаунт не подтвержден. Проверьте email."]
+            except User.DoesNotExist:
+                # 3. Не верные лог/пас
+                errors = ["Неверно указаны логин или пароль"]
             context = {
-                "errors": ["Некорректные данные"],
+                "errors": errors,
             }
-            print(f"------------->user={user}")
             return render(request, "pages/index.html", context)
+
+
+        #     # Если аутентификация не удалась, можно вывести сообщение об ошибке
+        #     context = {
+        #         "errors": ["Некорректные данные"],
+        #     }
+        #     print(f"------------->user={user}")
+        #     return render(request, "pages/index.html", context)
     context = {'pagename': 'Э! Какой умный!'}
     return render(request, 'pages/index.html', context)
 
@@ -594,3 +616,31 @@ def edit_profile(request):
     }
 
     return render(request, 'pages/user_profile_edite.html', context)
+
+def activate_account(request, user_id, token):
+    """
+    Подтверждение аккаунта пользователя по токену
+    """
+    try:
+        user = User.objects.get(id=user_id)
+
+        # Проверяем, не подтвержден ли уже аккаунт
+        if user.is_active:
+            messages.info(request, 'Ваш аккаунт уже подтвержден.')
+            return redirect('home')
+
+        # Проверяем токен
+        if verify_activation_token(user, token):
+            user.is_active = True
+            user.save()
+            messages.success(request,
+                             'Ваш аккаунт успешно подтвержден! Теперь вы можете войти в систему.')
+            return redirect('home')
+        else:
+            messages.error(request,
+                           'Недействительная ссылка для подтверждения. Возможно, она устарела.')
+            return redirect('home')
+
+    except User.DoesNotExist:
+        messages.error(request, 'Пользователь не найден.')
+        return redirect('home')

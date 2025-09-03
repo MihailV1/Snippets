@@ -20,6 +20,7 @@ def send_registration_message(sender, instance, created, **kwargs):
         print(f"Пользователь '{instance.username}' успешно зарегистрирован!")
         print(f"Отправитель: {sender.__name__}")
         print(f"ID пользователя: {instance.id}")
+        print(f"is_active пользователя: {instance.is_active}")
         print(f"--- Конец сигнала ---")
 
 

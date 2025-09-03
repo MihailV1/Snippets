@@ -196,7 +196,7 @@ LOGGING = {
         'django': {
             'handlers': ['console'],
             'level': 'INFO',
-            'propagate': False,
+            'propagate': True,
         },
         'MainApp': {
             'handlers': ['file'],
@@ -219,3 +219,10 @@ INTERNAL_IPS = [
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Для продакшена (SMTP)
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'  # или ваш SMTP сервер
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'vishnevskiy.mihail@gmail.com'
+# EMAIL_HOST_PASSWORD = 'bswd lhwq pqvu aeek'
