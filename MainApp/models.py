@@ -24,15 +24,15 @@ PUBLIC_CHOICES = [(0, 'Частный'),
                   ]
 
 
-# class Lang(models.Model):
-#     pass
 
+# User._meta.get_field('email')._unique = True
 
 class Notification(models.Model):
     NOTIFICATION_TYPES = [
         ('comment', 'Новый комментарий'),
         ('like', 'Новый лайк'),
         ('follow', 'Новый подписчик'),
+        ('snippet_update', 'Обновление сниппета'),
     ]
 
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
@@ -130,13 +130,15 @@ class Comment(models.Model):
     def __repr__(self):
         return f"C: {self.text[:10]} author:{self.author} sn: {self.snippet.name}"
 
-    # @property # можно писать comment.likes_count без скобок
-    # def likes_count(self):
-    #     return self.likes.filter(vote=LikeDislike.LIKE).count()
-    #
-    # @property
-    # def dislikes_count(self):
-    #     return self.likes.filter(vote=LikeDislike.DISLIKE).count()
+    @property
+    def likes_count(self):
+        """Количество лайков у комментария"""
+        return self.likes.filter(vote=LikeDislike.LIKE).count()
+
+    @property
+    def dislikes_count(self):
+        """Количество дизлайков у комментария"""
+        return self.likes.filter(vote=LikeDislike.DISLIKE).count()
 
 
 class Tag(models.Model):
@@ -161,3 +163,23 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"Профиль для {self.user.username}"
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='subscriptions'
+    )
+    snippet = models.ForeignKey(
+        Snippet,
+        on_delete=models.CASCADE,
+        related_name='subscriptions'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'snippet')
+        ordering = ['-created_at']  # сортировка по дате подписки
+
+    def __str__(self):
+        return f"{self.user.username} подписан на {self.snippet.name}"

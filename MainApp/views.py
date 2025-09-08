@@ -6,7 +6,7 @@ from django.http import Http404, HttpResponse, HttpResponseForbidden, JsonRespon
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import auth  # Импортируем модуль auth
 from django.db.models import F, Q, Count, Avg
-from MainApp.models import Snippet, Comment, LANG_CHOICES, Notification, LikeDislike
+from MainApp.models import Snippet, Comment, LANG_CHOICES, Notification, LikeDislike, Subscription
 from MainApp.forms import SnippetForm, UserRegistrationForm, CommentForm, UserProfileForm, UserEditForm
 from MainApp.models import LANG_ICON, Tag
 from django.contrib.auth.decorators import login_required
@@ -644,3 +644,31 @@ def activate_account(request, user_id, token):
     except User.DoesNotExist:
         messages.error(request, 'Пользователь не найден.')
         return redirect('home')
+
+
+@login_required
+def subscribe_to_snippet(request, id):
+    snippet = get_object_or_404(Snippet, id=id)
+    try:
+        if request.method == 'POST':
+            subscription, created = Subscription.objects.get_or_create(user=request.user, snippet=snippet)
+            if created:
+                messages.success(request, f"Вы подписались на сниппет '{snippet.name}'")
+            else:
+                messages.info(request, f"Вы уже подписаны на сниппет '{snippet.name}'")
+            return redirect('snippet-id', id=id)
+    except Subscription.DoesNotExist:
+        messages.error(request, f"Какая то попенция с -->'{snippet.name}'")
+        return redirect('snippet-id', id=id)
+
+    #     subscription, created = Subscription.objects.get_or_create(
+    #         user=request.user,
+    #         snippet=snippet
+    #     )
+    #
+    #     if created:
+    #         messages.success(request, f"Вы подписались на сниппет '{snippet.name}'")
+    #     else:
+    #         messages.info(request, f"Вы уже подписаны на сниппет '{snippet.name}'")
+    #
+    # return redirect(request.META.get('HTTP_REFERER', 'home'))  # возвращаем на предыдущую страницу

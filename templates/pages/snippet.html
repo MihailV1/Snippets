@@ -14,6 +14,12 @@
                 <hr>
             </div>
         </div>
+        <form action="{% url 'subscribe-to-snippet' snippet.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">
+                Подписаться
+            </button>
+        </form>
 
         <fieldset disabled>
             <div class="row disabled">
@@ -67,29 +73,31 @@
                     </div>
                 </div>
                 <div class="col-1">
-                    <div class="copy-button d-flex justify-content-end" onclick="copyToBuffer(`{{ snippet.code }}`)"> Copy</div>
-{#                    <a class="copy-button d-flex justify-content-end" onclick="copyFromInput()" id="codeCopy">#}
-{#                        Copy#}
-{#                    </a>#}
+                    <div class="copy-button d-flex justify-content-end" onclick="copyToBuffer(`{{ snippet.code }}`)">
+                        Copy
+                    </div>
+                    {#                    <a class="copy-button d-flex justify-content-end" onclick="copyFromInput()" id="codeCopy">#}
+                    {#                        Copy#}
+                    {#                    </a>#}
                 </div>
             </div>
         </fieldset>
         <div class="d-flex justify-content-end">
-                                                <div class="d-inline-flex align-items-center me-3">
-                                        <button class="btn btn-sm btn-outline-success me-1"
-                                                onclick="voteSnippet({{ snippet.id }}, 1)"
-                                                title="Лайк">
-                                            <i class="fa-regular fa-thumbs-up"></i>
-                                        </button>
-                                        <span class="badge bg-success me-2" id="likes-{{ snippet.id }}">{{ snippet.likes_count }}</span>
+            <div class="d-inline-flex align-items-center me-3">
+                <button class="btn btn-sm btn-outline-success me-1"
+                        onclick="voteSnippet({{ snippet.id }}, 1)"
+                        title="Лайк">
+                    <i class="fa-regular fa-thumbs-up"></i>
+                </button>
+                <span class="badge bg-success me-2" id="likes-{{ snippet.id }}">{{ snippet.likes_count }}</span>
 
-                                        <button class="btn btn-sm btn-outline-danger me-1"
-                                                onclick="voteSnippet({{ snippet.id }}, -1)"
-                                                title="Дизлайк">
-                                            <i class="fa-solid fa-thumbs-down"></i>
-                                        </button>
-                                        <span class="badge bg-danger" id="dislikes-{{ snippet.id }}">{{ snippet.dislikes_count }}</span>
-                                    </div>
+                <button class="btn btn-sm btn-outline-danger me-1"
+                        onclick="voteSnippet({{ snippet.id }}, -1)"
+                        title="Дизлайк">
+                    <i class="fa-solid fa-thumbs-down"></i>
+                </button>
+                <span class="badge bg-danger" id="dislikes-{{ snippet.id }}">{{ snippet.dislikes_count }}</span>
+            </div>
             <i class="text-muted"> Всего смотрели: {{ snippet.views_count }}</i></div>
 
         {#  Форма добавления комментария      #}
@@ -156,14 +164,16 @@
                                                 title="Лайк">
                                             <i class="fa-regular fa-thumbs-up"></i>
                                         </button>
-                                        <span class="badge bg-success me-2" id="likes-{{ comment.id }}">{{ comment.likes_count }}</span>
+                                        <span class="badge bg-success me-2"
+                                              id="likes-{{ comment.id }}">{{ comment.likes_count }}</span>
 
                                         <button class="btn btn-sm btn-outline-danger me-1"
                                                 onclick="voteComment({{ comment.id }}, -1)"
                                                 title="Дизлайк">
                                             <i class="fa-solid fa-thumbs-down"></i>
                                         </button>
-                                        <span class="badge bg-danger" id="dislikes-{{ comment.id }}">{{ comment.dislikes_count }}</span>
+                                        <span class="badge bg-danger"
+                                              id="dislikes-{{ comment.id }}">{{ comment.dislikes_count }}</span>
                                     </div>
                                 </small>
                             </div>

@@ -38,6 +38,7 @@ path('registration/', views_cbv.UserRegistrationView.as_view(), name='registrati
                   # path('api/comment/<int:id>/<str:str>', views.like_dislike, name='like_dislike'),
                   path('api/comment/vote/', views.comment_like_dislike, name='comment_like_dislike'),
                   path('api/snippet/vote/', views.snippet_like_dislike, name='snippet_like_dislike'),
+path('snippet/<int:id>/subscribe/', views.subscribe_to_snippet, name='subscribe-to-snippet'),
                   path('profile/', views.user_profile, name="user_profile"),
                   path('profile/edit', views.edit_profile, name="user_profile_edit"),
                   path('profile/edit', views.edit_profile, name="user_profile_edit"),
