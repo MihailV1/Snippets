@@ -47,24 +47,14 @@ urlpatterns = [
               ] #+ debug_toolbar_urls()
 
 if settings.DEBUG:
-    # Добавляем debug_toolbar URLs только в режиме разработки
-    if settings.DEBUG:
-        try:
-            from debug_toolbar.toolbar import debug_toolbar_urls
-
-            urlpatterns += [
-                path('__debug__/', include(debug_toolbar.urls)),
-            ]
-        except ImportError:
-            pass
-        urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-        urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-        urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-# snippets/list
-# snippets/list?sort=name
-# snippets/list?sort=lang
-# snippets/list?sort=create_date
-
-# api/comment/3/like
-# api/comment/3/dislike
+    try:
+        # import debug_toolbar
+        from debug_toolbar.toolbar import debug_toolbar_urls
+        
+        urlpatterns += [
+            path('__debug__/', include(debug_toolbar.urls)),
+        ]
+    except ImportError:
+        pass
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
