@@ -1,4 +1,4 @@
-import debug_toolbar
+
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
@@ -48,9 +48,9 @@ urlpatterns = [
 
 if settings.DEBUG:
     try:
-        # import debug_toolbar
-        from debug_toolbar.toolbar import debug_toolbar_urls
-        
+        import debug_toolbar
+        # from debug_toolbar.toolbar import debug_toolbar_urls
+
         urlpatterns += [
             path('__debug__/', include(debug_toolbar.urls)),
         ]
