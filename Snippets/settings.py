@@ -260,8 +260,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_HOST = 'smtp.gmail.com'  # или ваш SMTP сервер
 # EMAIL_PORT = 587
 # EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'vishnevskiy.mihail@gmail.com'
-# EMAIL_HOST_PASSWORD = 'bswd lhwq pqvu aeek'
+# EMAIL_HOST_USER = '_________@gmail.com'
+# EMAIL_HOST_PASSWORD = '_______________'
 
 
 # Настройки статических файлов для продакшена
